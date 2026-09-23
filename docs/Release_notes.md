@@ -1644,3 +1644,46 @@ numerical behaviour changed.
   exactly that hole. It now passes `proteome=None`, which is the
   documented way to say "mapping only, no proteome" — precisely what the
   cell demonstrates.
+
+## v 2.3.2
+
+96 commits since 2.3.1 — a large `ov.pl` plotting overhaul plus spatial,
+single-cell, bulk and compatibility fixes.
+
+### Plotting (`ov.pl`) — panels, new plots, robustness
+- **panelflow — a measure-then-place layout engine for exact panels (PR #932)**;
+  multipanel now sizes the panels, not just the canvas (#930); every
+  single-axes plot takes an `ax=` so it fits a panel (#931); place a marsilea
+  heatmap in a region with `rect=` (#938).
+- **New plots** — general Sankey / alluvial (#933); an embeddable clustered
+  heatmap on marsilea (#934); count-based CCC heatmaps (#962); optional trend
+  guides on `cellproportion` (#957).
+- **Robustness** — `adjust_text` label repel that cannot leave the axes (#937);
+  overlapping tick labels detected at draw time and separated (#940); venn on
+  matplotlib-venn + volcano axis labels follow rcParams (#935); volcano
+  threshold guides become annotations and `ns` gets a legend key (#939);
+  qqplot confidence band drawn on the correct scale (#941); upset takes a host
+  figure and dotplot legend side is a choice (#942); slopeplot / boxplot
+  enhancements (#936); CJK font fallback in `plot_set` (#951).
+
+### Spatial (`ov.space`)
+- STAligner batch identity + actual alignment (#969); Visium coordinate /
+  library / image-transform alignment (#970); raw-count enforcement for
+  cell2location & RCTD (#971); SpaceFlow & STAGATE training/input fixes (#968);
+  COMMOT & FlowSig validation (#966); cell2location one-hot handling (#961).
+
+### Single-cell
+- Bonsai cell-state trees (`tl` + `pl`) (#964); CellPhoneDB Method 3 (#960) and
+  duplicate-gene handling in scoring (#958); perturbation backend outputs &
+  error handling (#979); velocity downstream alignment (#945); cellmatch
+  duplicate-method cleanup (#976); removed CytoTRACE2 (#978) and the scGPT
+  placeholder that shadowed the real implementation (#975).
+
+### Bulk
+- pyDEG input-column validation (#943); accept GDC-prefixed clinical fields (#946).
+
+### Compatibility & infrastructure
+- Works across anndata 0.11–0.13 and both zarr generations (#965); sude
+  torch-diag gradient NaN fix (#947); DecontX batch labels (#949); `ov.io`
+  re-exports every spatial reader on the facade (#929); carry the upstream MIT
+  licences for vendored UCE & SAMap (#963).
