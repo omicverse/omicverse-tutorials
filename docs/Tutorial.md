@@ -77,6 +77,7 @@ This page is the markdown overview for the tutorial structure defined in `mkdocs
   - [Batch Correction with SIMBA](Tutorials-single/t_simba.ipynb)
 - Cell-Cell Communication
   - [Cell-cell communication with CellPhoneDB](Tutorials-single/t_ccc_cellphonedb.ipynb)
+  - [Cell-cell communication with CellChat](Tutorials-single/t_ccc_cellchat.ipynb)
   - [Cell-cell communication with LIANA+](Tutorials-single/t_ccc_liana.ipynb)
 - Velocity
   - [Velocity Basic Calculation](Tutorials-velo/t_velo.ipynb)
