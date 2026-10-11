@@ -5,6 +5,7 @@ Tutorials for ligand-receptor and cell-cell communication analysis in single-cel
 ```{toctree}
 :maxdepth: 1
 
+../Tutorials-single/t_ccc_run_ccc
 ../Tutorials-single/t_ccc_cellphonedb
 ../Tutorials-single/t_ccc_cellchat
 ../Tutorials-single/t_ccc_liana

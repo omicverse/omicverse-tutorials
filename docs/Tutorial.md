@@ -76,6 +76,7 @@ This page is the markdown overview for the tutorial structure defined in `mkdocs
   - [Drug response predict with scDrug](Tutorials-single/t_scdrug.ipynb)
   - [Batch Correction with SIMBA](Tutorials-single/t_simba.ipynb)
 - Cell-Cell Communication
+  - [One API for seven communication methods: run_ccc](Tutorials-single/t_ccc_run_ccc.ipynb)
   - [Cell-cell communication with CellPhoneDB](Tutorials-single/t_ccc_cellphonedb.ipynb)
   - [Cell-cell communication with CellChat](Tutorials-single/t_ccc_cellchat.ipynb)
   - [Cell-cell communication with LIANA+](Tutorials-single/t_ccc_liana.ipynb)

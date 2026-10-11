@@ -78,6 +78,7 @@ This page mirrors the `Single` section in `mkdocs.yml`.
 
 ## Cell-Cell Communication
 
+- [One API for seven communication methods: run_ccc](t_ccc_run_ccc.ipynb)
 - [Cell-cell communication with CellPhoneDB](t_ccc_cellphonedb.ipynb)
 - [Cell-cell communication with CellChat](t_ccc_cellchat.ipynb)
 - [Cell-cell communication with LIANA+](t_ccc_liana.ipynb)
