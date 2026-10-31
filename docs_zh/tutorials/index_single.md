@@ -107,6 +107,14 @@
 ../Tutorials-velo/t_velo_cellrank
 ```
 
+## 虚拟基因扰动
+
+```{toctree}
+:maxdepth: 2
+
+../Tutorials-single/perturb/index
+```
+
 ## 多组学
 
 ```{toctree}
