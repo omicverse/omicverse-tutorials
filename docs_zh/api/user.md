@@ -403,6 +403,7 @@ import omicverse as ov
    pl.cell_cor_heatmap
    pl.CellChatViz
    pl.cellproportion
+   pl.celltype_tree
    pl.complexheatmap
    pl.contour
    pl.ConvexHull

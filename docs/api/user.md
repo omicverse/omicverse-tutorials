@@ -404,6 +404,7 @@ Public registry entries listed here: 414
    pl.cell_cor_heatmap
    pl.CellChatViz
    pl.cellproportion
+   pl.celltype_tree
    pl.complexheatmap
    pl.contour
    pl.ConvexHull
