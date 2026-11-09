@@ -1753,3 +1753,14 @@ spatial, bulk and imaging features and a round of performance work.
   (#995); pydeseq2 imported only in the DESeq2 branch; ambient `envelope`
   refuses a raw matrix it cannot align (#998); PCA no longer fits twice on the
   sklearn CPU path (#1022).
+
+## v 2.4.1
+
+limma from PyPI.
+
+### Bulk
+- pylimma is now used from PyPI (`python-limma>=0.1.1`) instead of a vendored
+  copy, as pyedger is since 2.4.0 (#1029). It backs `pyDEG.deg_analysis(method='limma')`,
+  `continuous_deg` and `timecourse_deg`; `omicverse.external.pylimma` remains as an
+  alias. python-limma 0.1.1 is R-parity tested against limma 3.68.5 on eight TCGA
+  cohorts and adds limma's B-statistic and `lmFit(v, design)` on voom output.
