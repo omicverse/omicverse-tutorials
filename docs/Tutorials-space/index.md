@@ -19,6 +19,7 @@ This page mirrors the `Space` section in `mkdocs.yml` and provides a markdown en
 - [Analyze Xenium data](t_xenium_preprocess.ipynb)
 - [Analyze 10x Atera (WTA Preview) data](t_atera_preprocess.ipynb)
 - [Analyze Visium HD data](t_visium_hd_preprocess.ipynb)
+- [One-to-one cell matching across two imaging rounds (DAPI vs H&E)](t_cell_matching.ipynb)
 
 ## Cluster
 
@@ -46,6 +47,8 @@ See [`cluster/index.md`](cluster/index.md) for the full overview, recommendation
 - [Spatial Communication](t_commot_flowsig.ipynb)
 - [Spatial IsoDepth Calculation](t_gaston.ipynb)
 - [Single cell spatial alignment tools](t_slat.ipynb)
+- [Marker-panel cluster annotation from a marker knowledge base](t_marker_panel_annotation.ipynb)
+- [Distance to a tissue boundary, compared across patient groups](t_spatial_boundary_distance.ipynb)
 
 ## H&E → spatial transcriptomics (HE-zoo)
 

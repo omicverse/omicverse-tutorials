@@ -45,10 +45,19 @@ backend.
    aggregates spot-level p-values by Cauchy combination, and visualises
    the results with native OmicVerse plotting methods.
 
+4. **Is every sample who it claims to be?** — sample-level QC of a
+   tumour/normal sequencing cohort straight from aligned reads at a SNP
+   panel: allele counting, genotype concordance and relationship
+   resolution (swaps, duplicates), cross-sample contamination,
+   tumour-in-normal contamination and tumour allelic imbalance, collected
+   into one batch QC table. Runs on a small simulated cohort with planted
+   problems, so every call can be checked against the truth.
+
 ```{toctree}
 :maxdepth: 1
 
 ../Tutorials-genetics/t_genetics_01_gwas_pipeline
 ../Tutorials-genetics/t_genetics_02_functional_followup
 ../Tutorials-genetics/t_genetics_03_spatially_resolved_gwas
+../Tutorials-genetics/t_genetics_04_sample_qc
 ```

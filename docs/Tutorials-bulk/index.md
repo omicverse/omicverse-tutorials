@@ -10,6 +10,7 @@ This page mirrors the `Bulk` section in `mkdocs.yml`.
 ## Preprocessing
 
 - [Batch correction in Bulk RNA-seq or microarray data](t_bulk_combat.ipynb)
+- [Multi-site harmonisation with traveling subjects](t_multisite_harmonize.ipynb)
 
 ## Downstream
 

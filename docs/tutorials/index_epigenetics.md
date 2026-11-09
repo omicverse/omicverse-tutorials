@@ -24,4 +24,5 @@ the ChIP one fetches its reads from Zenodo, the footprint one reads a local TOBI
 ../Tutorials-epigenetics/t_epi_08_single_cell_hic
 ../Tutorials-epigenetics/t_epi_09_bulk_chipseq_upstream
 ../Tutorials-epigenetics/t_epi_10_bulk_footprinting
+../Tutorials-epigenetics/t_epi_11_spikein_chip
 ```

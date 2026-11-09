@@ -6,6 +6,7 @@ This page is the markdown overview for the tutorial structure defined in `mkdocs
 
 - [GWAS — end-to-end pipeline](Tutorials-genetics/t_genetics_01_gwas_pipeline.ipynb)
 - [Functional follow-up of GWAS hits](Tutorials-genetics/t_genetics_02_functional_followup.ipynb)
+- [Tumour/normal sample QC from aligned reads at a SNP panel](Tutorials-genetics/t_genetics_04_sample_qc.ipynb)
 
 ## Bulk Transcriptomics
 
@@ -15,6 +16,7 @@ This page is the markdown overview for the tutorial structure defined in `mkdocs
   - [Bulk RNA-seq alignment with kb-python](Tutorials-bulk/t_mapping_kbpython.ipynb)
 - Preprocessing
   - [Batch correction in Bulk RNA-seq or microarray data](Tutorials-bulk/t_bulk_combat.ipynb)
+  - [Multi-site harmonisation with traveling subjects](Tutorials-bulk/t_multisite_harmonize.ipynb)
 - Downstream
   - [Different expression analysis](Tutorials-bulk/t_deg.ipynb)
   - [Different expression analysis with DEseq2](Tutorials-bulk/t_deseq2.ipynb)
@@ -102,6 +104,7 @@ This page is the markdown overview for the tutorial structure defined in `mkdocs
   - [Analyze Xenium data](Tutorials-space/t_xenium_preprocess.ipynb)
   - [Analyze 10x Atera (WTA Preview) data](Tutorials-space/t_atera_preprocess.ipynb)
   - [Analyze Visium HD data](Tutorials-space/t_visium_hd_preprocess.ipynb)
+  - [One-to-one cell matching across two imaging rounds (DAPI vs H&E)](Tutorials-space/t_cell_matching.ipynb)
   - [Spatial clustering and denoising expressions](Tutorials-space/t_cluster_space.ipynb)
   - [Spatial integration and clustering](Tutorials-space/t_staligner.ipynb)
 - Deconvolution
@@ -115,6 +118,8 @@ This page is the markdown overview for the tutorial structure defined in `mkdocs
   - [Spatial Communication](Tutorials-space/t_commot_flowsig.ipynb)
   - [Spatial IsoDepth Calculation](Tutorials-space/t_gaston.ipynb)
   - [Single cell spatial alignment tools](Tutorials-space/t_slat.ipynb)
+  - [Marker-panel cluster annotation from a marker knowledge base](Tutorials-space/t_marker_panel_annotation.ipynb)
+  - [Distance to a tissue boundary, compared across patient groups](Tutorials-space/t_spatial_boundary_distance.ipynb)
 
 ## Immune Repertoire
 
@@ -152,6 +157,12 @@ This page is the markdown overview for the tutorial structure defined in `mkdocs
 - [3D molecular structure visualization](Tutorials-mol/t_mol_structure.ipynb)
 - [Binding-pocket detection & druggability (fpocket)](Tutorials-mol/t_mol_druggability.ipynb)
 - [Molecular docking with AutoDock Vina](Tutorials-mol/t_mol_docking.ipynb)
+- [Receptor-free pose generation against a pharmacophore](Tutorials-mol/t_mol_pharmacophore.ipynb)
+
+## Electrophysiology & Behaviour
+
+- [EEG channel QC and event-related potentials](Tutorials-neuro/t_eeg_channel_qc_erp.ipynb)
+- [Trial-by-trial choice models](Tutorials-neuro/t_choice_model.ipynb)
 
 ## Synthetic Biology
 

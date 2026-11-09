@@ -9,4 +9,6 @@ Tutorials for spatial transcriptomics downstream analysis.
 ../Tutorials-space/t_commot_flowsig
 ../Tutorials-space/t_gaston
 ../Tutorials-space/t_slat
+../Tutorials-space/t_marker_panel_annotation
+../Tutorials-space/t_spatial_boundary_distance
 ```
