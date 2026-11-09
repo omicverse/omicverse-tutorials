@@ -12,4 +12,5 @@ Tutorials for spatial transcriptomics data preprocessing.
 ../Tutorials-space/t_atera_preprocess
 ../Tutorials-space/t_visium_hd_preprocess
 ../Tutorials-space/t_staligner
+../Tutorials-space/t_cell_matching
 ```

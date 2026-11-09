@@ -27,6 +27,7 @@ analysis.
 | **Druggability** | Detect binding pockets, score druggability, and check what drugs are already known — structure-based target prioritization. |
 | **Docking** | Validate a docking protocol by redocking, then dock a candidate molecule and inspect the binding pose. |
 | **Dynamics** | Take a static model or a docked pose and actually *run* it: solvate, minimise, equilibrate, produce a trajectory on the GPU, then read stability (RMSD/RMSF/DSSP) and rescore binding with MM-GBSA. |
+| **Pharmacophore** | Receptor-free pose generation: derive a pharmacophore (features + excluded volumes) from a known ligand, fit new molecules onto it, and check the poses for RMSD, feature match and conformational strain. |
 
 ```{toctree}
 :maxdepth: 1
@@ -35,6 +36,7 @@ analysis.
 ../Tutorials-mol/t_mol_druggability
 ../Tutorials-mol/t_mol_docking
 ../Tutorials-mol/t_mol_dynamics
+../Tutorials-mol/t_mol_pharmacophore
 ```
 
 ## Why add dynamics

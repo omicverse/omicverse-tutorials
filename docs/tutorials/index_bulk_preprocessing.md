@@ -6,4 +6,5 @@ Tutorials for bulk RNA-seq preprocessing.
 :maxdepth: 1
 
 ../Tutorials-bulk/t_bulk_combat
+../Tutorials-bulk/t_multisite_harmonize
 ```
