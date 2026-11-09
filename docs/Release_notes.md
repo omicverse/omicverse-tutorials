@@ -1687,3 +1687,69 @@ single-cell, bulk and compatibility fixes.
   torch-diag gradient NaN fix (#947); DecontX batch labels (#949); `ov.io`
   re-exports every spatial reader on the facade (#929); carry the upstream MIT
   licences for vendored UCE & SAMap (#963).
+
+## v 2.4.0
+
+A multithreaded C++ backend becomes the default, plus new single-cell,
+spatial, bulk and imaging features and a round of performance work.
+
+### Multithreaded C++ backend (`backend='cpp'`, default)
+- **New `backend=` parameter and `ov.settings.backend`** on `qc`,
+  `normalize_total`, `highly_variable_genes` (pearson), `preprocess`, `scale`,
+  `pca`, `neighbors`, `umap`, `leiden`, `cosg` and `find_markers`, powered by
+  [anndataoom-fast](https://pypi.org/project/anndataoom-fast/) (now a core
+  dependency). `backend='python'` keeps the previous code; output structures
+  are unchanged and results do not depend on the number of threads (#1022).
+- Works in memory and out of core (AnnDataOOM): the C++ side reads h5ad chunks
+  itself on all threads, streams 6 passes over the matrix for the whole
+  workflow and keeps peak memory low (SEA-AD MTG, 1.38M cells, 32 threads:
+  standard workflow in 1.5 min with 13 GB, vs 1.6 min / 114 GB for brisc).
+- **Leiden** — with `backend='cpp'` the default flavor is `'brisc'` (C++ port
+  of brisc's Leiden, same RB-configuration objective, ~4x faster than
+  leidenalg); `flavor='leidenalg'` / `'leidenalg_exact'` runs an exact C++ port
+  of leidenalg; `n_iterations` defaults to 2 under `cpp` (#1022). A list of
+  resolutions works in every mode (`cpu`, `cpu-gpu-mixed`, `gpu`), labels in
+  `obs[f"{key_added}_{r}"]` (#1027).
+- **UMAP** — deterministic multithreaded layout (same objective, edge schedule
+  and negative sampling as umap-learn; same embedding for any thread count).
+- **New `ov.pp.localmap` / `ov.pp.pacmap`** — brisc's embeddings.
+- `find_markers(method='cosg')` streams group sums from disk for AnnDataOOM
+  instead of materialising the object (lung200k: 142 s / 105 GB → 2.1 s / 2.1 GB).
+
+### GPU mode
+- Works with any rapids-singlecell release from 0.11 to 0.18
+  (`filter_cells`/`filter_genes`, `normalize_total`, `pca`, `neighbors`
+  argument changes handled; `neighbors(method=...)` no longer passed as the
+  kNN algorithm) (#1028).
+
+### Performance
+- pseudobulk 2.7–8.6x faster for sample × cell-type cohorts (#1026); AUCell CPU
+  scoring 2.4x faster (#1025); `co_occurrence` peak memory 622 MB → 3.4 MB at
+  4,000 spots (#1024); scTenifoldKnk perturbation backend 24% faster (#1023).
+
+### Single-cell
+- CellChat in PyTorch (`ov.single.run_cellchat`) with R parity; unified
+  `run_ccc` over seven CCC methods with consensus and comparison; dynamo
+  perturbation backend; optional Scissor phenotype-associated cell selection.
+
+### Spatial (`ov.space`)
+- Pluggable cell-segmentation backends with seam-free tiling (fixes the bin2cell
+  tile-overlap bug) (#1001); `match_cells` + `register_images` across imaging
+  rounds (#999); marker-panel cluster annotation and spatial measurement
+  helpers (#1004); autocorrelation and SVG semantics aligned with Squidpy.
+
+### Bulk, genetics and other modules
+- Spike-in / external-reference quantitative ChIP (#1021); `multisite_harmonize`
+  for traveling-subject device offsets (#1003); tumour/normal sample QC from
+  aligned reads at a SNP panel (#1020); pharmacophore-constrained pose
+  generation in `ov.mol` (#1018); `fit_choice_model` (#1006); channel QC and
+  ERP helpers for multichannel electrophysiology (#1002); radial cell
+  annotation tree in `ov.pl` (#1019); ambient-RNA `method='envelope'` (#996).
+- pyedger is now used from PyPI (`pyedger>=0.2.2`) instead of a vendored copy (#986).
+
+### Fixes
+- UMAP spectral init no longer hits the ARPACK int32 overflow at ~1.66M–2M
+  cells (#990); TMM-normalised library sizes before voom in the limma paths
+  (#995); pydeseq2 imported only in the DESeq2 branch; ambient `envelope`
+  refuses a raw matrix it cannot align (#998); PCA no longer fits twice on the
+  sklearn CPU path (#1022).
