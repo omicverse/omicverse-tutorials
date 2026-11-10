@@ -1756,7 +1756,24 @@ spatial, bulk and imaging features and a round of performance work.
 
 ## v 2.4.1
 
-limma from PyPI.
+A bug-fix release: cpu-gpu-mixed QC works again on in-memory data, limma comes
+from PyPI, and fixes from the terminal-bench-science tutorials.
+
+### Fixes
+- `ov.pp.qc` in `ov.settings.cpu_gpu_mixed_init()` mode raised
+  `NameError: name 'backend' is not defined` on an in-memory AnnData (a 2.4.0
+  regression from #1022; AnnDataOOM inputs were not affected). Mixed-mode QC
+  now keeps exactly the same cells and genes as CPU mode (#1032).
+- `ov.pp.ambient.remove_ambient(method='envelope')` no longer pins every cell at
+  the lower clip at low contamination: the gene panel is cross-fitted
+  (`crossfit=True`) (#1030).
+- `ov.space.panel_gene_map` maps `aSMA` to ACTA2 (was ACTA1) (#1030).
+- `ov.genetics.resolve_sample_relationships`: a second library of the same
+  person no longer causes a false identity mismatch (#1030).
+- `ov.pp.scdblfinder` (and `ov.pp.qc` with the default
+  `doublets_method='scdblfinder'`) expects 1% doublets per 1000 cells, as R
+  scDblFinder (was 0.8%); pyscdblfinder >= 0.3.1 follows R scDblFinder 1.16.0
+  step by step, so install it to match R (#1031).
 
 ### Bulk
 - pylimma is now used from PyPI (`python-limma>=0.1.1`) instead of a vendored
