@@ -19,6 +19,7 @@ index_metabol
 index_epigenetics
 index_neuro
 index_radiology
+index_ecology
 index_microbiome
 index_multi_omics
 index_foundation
