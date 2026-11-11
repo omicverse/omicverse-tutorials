@@ -250,3 +250,5 @@ This page is the markdown overview for the tutorial structure defined in `mkdocs
 - [Funky heatmaps for benchmark / multi-metric tables](Tutorials-plotting/t_funkyheatmap.ipynb)
 - [Clinical statistics and figure assembly](Tutorials-plotting/t_clinical_stats_layout.ipynb)
 - [Statistical plots from a table](Tutorials-plotting/t_statistical_plots.ipynb)
+
+- [SPLIT: real spatial counts and R comparison](Tutorials-space/t_split.ipynb)
