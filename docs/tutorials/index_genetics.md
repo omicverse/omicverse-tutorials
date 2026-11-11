@@ -62,6 +62,16 @@ backend.
    model and a self-contained predictor script. Simulated with a known
    truth, so the naive pooled-AUROC choice can be seen to fail.
 
+6. **Which genes actually cause the phenotype, and does the model transfer?**
+   — bacterial gene presence/absence against a binary phenotype in a
+   lineage-structured cohort: forward selection with an extended BIC penalty
+   and genotype PCs as covariates (`ov.genetics.trait_determinants`), a scan
+   for a background locus that neutralises or enables a determinant
+   (`effect_modifier_scan`), and transfer of the trait model to an unlabelled
+   agent whose metadata differs from its class-mates
+   (`transfer_trait_predict`, pooled vs consensus with the reasons it gives).
+   Simulated with a known determinant set, so every selection can be scored.
+
 ```{toctree}
 :maxdepth: 1
 
@@ -70,4 +80,5 @@ backend.
 ../Tutorials-genetics/t_genetics_03_spatially_resolved_gwas
 ../Tutorials-genetics/t_genetics_04_sample_qc
 ../Tutorials-genetics/t_transfer_model_ranking
+../Tutorials-genetics/t_genetics_05_trait_determinants
 ```
