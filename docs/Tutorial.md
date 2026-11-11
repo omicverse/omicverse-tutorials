@@ -163,6 +163,7 @@ This page is the markdown overview for the tutorial structure defined in `mkdocs
 ## Electrophysiology & Behaviour
 
 - [EEG channel QC and event-related potentials](Tutorials-neuro/t_eeg_channel_qc_erp.ipynb)
+- [Quantitative susceptibility mapping from multi-echo GRE](Tutorials-neuro/t_qsm_reconstruction.ipynb)
 - [Trial-by-trial choice models](Tutorials-neuro/t_choice_model.ipynb)
 
 ## Synthetic Biology
