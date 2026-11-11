@@ -166,6 +166,10 @@ This page is the markdown overview for the tutorial structure defined in `mkdocs
 - [EEG channel QC and event-related potentials](Tutorials-neuro/t_eeg_channel_qc_erp.ipynb)
 - [Quantitative susceptibility mapping from multi-echo GRE](Tutorials-neuro/t_qsm_reconstruction.ipynb)
 
+## Ecology & Wildlife Monitoring
+
+- [Open-set individual re-identification from photos](Tutorials-ecology/t_animal_reid.ipynb) — re-ID embeddings, SIFT+RANSAC verification calibrated on a random-pair null, a gallery of catalogued animals against new photographs, and choosing the number of individuals from data (ARI and abundance error on simulated spotted animals)
+
 ## Radiology
 
 - [Reading a band-like structure on a multi-sequence MR study](Tutorials-radiology/t_radiology_band_defect.ipynb) — DICOM geometry and plane classification, contrast class from TR/TE/TI, survey sheets with cell→mm mapping, a read ledger that votes on the principal finding, and a defect measured in millimetres on a synthetic study
