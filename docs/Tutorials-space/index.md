@@ -20,6 +20,7 @@ This page mirrors the `Space` section in `mkdocs.yml` and provides a markdown en
 - [Analyze 10x Atera (WTA Preview) data](t_atera_preprocess.ipynb)
 - [Analyze Visium HD data](t_visium_hd_preprocess.ipynb)
 - [One-to-one cell matching across two imaging rounds (DAPI vs H&E)](t_cell_matching.ipynb)
+- [Nuclei and primary cilia in confocal z-stacks](t_nuclei_cilia_zstack.ipynb) — `ov.space.seg.segment_nuclei` (surface-step vs focal-depth cue, chosen from the z sampling) and `ov.space.seg.detect_cilia` (basal body, shape and context rules, with the rejected-candidate table), scored against a simulated ground truth
 
 ## Cluster
 

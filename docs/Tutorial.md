@@ -107,6 +107,7 @@ This page is the markdown overview for the tutorial structure defined in `mkdocs
   - [Analyze 10x Atera (WTA Preview) data](Tutorials-space/t_atera_preprocess.ipynb)
   - [Analyze Visium HD data](Tutorials-space/t_visium_hd_preprocess.ipynb)
   - [One-to-one cell matching across two imaging rounds (DAPI vs H&E)](Tutorials-space/t_cell_matching.ipynb)
+  - [Nuclei and primary cilia in confocal z-stacks](Tutorials-space/t_nuclei_cilia_zstack.ipynb)
   - [Spatial clustering and denoising expressions](Tutorials-space/t_cluster_space.ipynb)
   - [Spatial integration and clustering](Tutorials-space/t_staligner.ipynb)
 - Deconvolution
