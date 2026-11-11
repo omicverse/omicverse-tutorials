@@ -7,6 +7,7 @@ This page is the markdown overview for the tutorial structure defined in `mkdocs
 - [GWAS — end-to-end pipeline](Tutorials-genetics/t_genetics_01_gwas_pipeline.ipynb)
 - [Functional follow-up of GWAS hits](Tutorials-genetics/t_genetics_02_functional_followup.ipynb)
 - [Tumour/normal sample QC from aligned reads at a SNP panel](Tutorials-genetics/t_genetics_04_sample_qc.ipynb)
+- [Choosing a pre-trained genomic model for a new cell context (transfer ranking)](Tutorials-genetics/t_transfer_model_ranking.ipynb)
 
 ## Bulk Transcriptomics
 
