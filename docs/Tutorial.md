@@ -165,6 +165,10 @@ This page is the markdown overview for the tutorial structure defined in `mkdocs
 
 - [EEG channel QC and event-related potentials](Tutorials-neuro/t_eeg_channel_qc_erp.ipynb)
 - [Quantitative susceptibility mapping from multi-echo GRE](Tutorials-neuro/t_qsm_reconstruction.ipynb)
+
+## Radiology
+
+- [Reading a band-like structure on a multi-sequence MR study](Tutorials-radiology/t_radiology_band_defect.ipynb) — DICOM geometry and plane classification, contrast class from TR/TE/TI, survey sheets with cell→mm mapping, a read ledger that votes on the principal finding, and a defect measured in millimetres on a synthetic study
 - [Trial-by-trial choice models](Tutorials-neuro/t_choice_model.ipynb)
 
 ## Synthetic Biology
