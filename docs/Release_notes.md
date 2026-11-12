@@ -1781,3 +1781,62 @@ from PyPI, and fixes from the terminal-bench-science tutorials.
   `continuous_deg` and `timecourse_deg`; `omicverse.external.pylimma` remains as an
   alias. python-limma 0.1.1 is R-parity tested against limma 3.68.5 on eight TCGA
   cohorts and adds limma's B-statistic and `lmFit(v, design)` on voom output.
+
+## v 2.4.2
+
+Faster in-memory analysis, a chunked GPU mode for data larger than GPU memory,
+and one `storage=` choice for where the matrix lives.
+
+### Where the matrix lives: `ov.read(path, storage=...)`
+- `storage='memory'` (default) loads an AnnData into RAM; `storage='disk'`
+  keeps the matrix on disk — AnnDataOOM in `cpu` / `cpu-gpu-mixed` mode, Dask
+  row blocks streamed to the GPU in `gpu` mode. `ov.read(backend='python' |
+  'rust')` still works with a `FutureWarning` (#1033).
+
+### GPU mode on row blocks (`gpu_init()` + `storage='disk'`)
+- `qc`, `preprocess` (`shiftlog|pearson`), `scale`, `pca` and
+  `find_markers(method='cosg')` stream the matrix through the GPU in
+  `chunk_size`-cell blocks, so it never has to fit in GPU or host memory;
+  `layer=` reads raw counts stored in a layer (#1033). SEA-AD MTG (1.38M
+  cells, 7.6B counts) runs end to end on one H100.
+- Copies from the pinned staging buffer wait for the device (concurrent
+  blocks could otherwise be corrupted), and gzip-compressed h5ad files are
+  decoded 7x faster (#1037).
+
+### Faster in-memory path (`backend='cpp'`, default)
+- Threaded h5ad loading, matrix subsets, normalisation, log1p and checks; the
+  QC, `min_genes` and `min_cells` filters become one cut; the counts layer is
+  copied once. SEA-AD MTG, 64 threads: 271 s → 75 s for the standard
+  workflow, peak memory 370 → 196 GB, results identical (#1046).
+- `ov.pp.scale`: when the dense scaled matrix would exceed 32 GB
+  (`OV_SCALE_DENSE_LIMIT_GB`), only per-gene `mean` / `std` are stored and
+  `ov.pp.pca` builds exactly the HVG columns of the dense result (same PCA);
+  `use_implicit_centering=False` keeps the dense `layers['scaled']` (#1046).
+- Requires `anndataoom-fast>=0.1.5` (also fixes Pearson HVGs after
+  `exclude_highly_expressed` on AnnDataOOM, decodes gzip h5ad faster and
+  works with umap-learn 0.6); `anndataoom` 0.1.9 reads files written by
+  anndata ≥ 0.13 with pandas ≥ 3.
+
+### New modules and functions
+- `ov.radiology`: DICOM MR / CT study reading, survey ledger and band
+  measurements (#1041).
+- `ov.tl`: quantitative susceptibility mapping from multi-echo GRE
+  (`qsm_*`, #1039); open-set individual re-identification from images
+  (`reid_*`, #1040); leakage-aware ranking of fixed models for transfer to
+  new environments (#1036).
+- `ov.synbio`: multi-round variant campaigns — batch choice, hierarchical
+  ranker, standalone predictor (#1038).
+- `ov.genetics`: `trait_determinants`, `effect_modifier_scan`,
+  `transfer_trait_predict` (#1005).
+- `ov.space.seg`: `segment_nuclei` (depth / surface-step modes) and
+  `detect_cilia` for 3-D immunofluorescence stacks (#1042).
+
+### Fixes
+- `ov.pp.ambient` `method='envelope'`: the soup is cross-fitted only when the
+  empty droplets measure it (fixes a 2.4.1 regression on shallow empties,
+  #1044).
+- `ov.genetics`: relatives are no longer merged into one individual in
+  `tumor_normal_batch_qc` (#1045).
+- `ov.space`: marker-panel review states (fixed / resolved / open) and robust
+  nomenclature lookups (#1047).
+
