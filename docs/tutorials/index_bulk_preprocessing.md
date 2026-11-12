@@ -7,4 +7,5 @@ Tutorials for bulk RNA-seq preprocessing.
 
 ../Tutorials-bulk/t_bulk_combat
 ../Tutorials-bulk/t_multisite_harmonize
+../Tutorials-bulk/t_sample_annotation_recovery
 ```

@@ -11,6 +11,7 @@ This page mirrors the `Bulk` section in `mkdocs.yml`.
 
 - [Batch correction in Bulk RNA-seq or microarray data](t_bulk_combat.ipynb)
 - [Multi-site harmonisation with traveling subjects](t_multisite_harmonize.ipynb)
+- [Recovering missing sample annotations across cohorts](t_sample_annotation_recovery.ipynb)
 
 ## Downstream
 
