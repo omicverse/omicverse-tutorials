@@ -13,15 +13,15 @@ ov.settings.gpu_init()                      # 1. compute on the GPU
 adata = ov.read("data.h5ad", storage="disk")  # 2. keep the matrix on disk
 ```
 
-| mode | `storage='memory'` | `storage='disk'` (default) |
+| mode | `storage='memory'` (default) | `storage='disk'` |
 |---|---|---|
 | `cpu` | AnnData in RAM | AnnDataOOM: chunks streamed from disk by multithreaded C++ kernels |
 | `cpu-gpu-mixed` | AnnData in RAM | AnnDataOOM; PCA, kNN, UMAP on the GPU |
 | `gpu` | AnnData in RAM, moved to the GPU (RAPIDS) | Row blocks streamed from disk to the GPU (Dask) |
 
-`ov.read("data.h5ad")` keeps the matrix on disk; pass `storage="memory"` for a
-plain in-memory `anndata.AnnData` (for tools that need one, or when the file will
-be overwritten while the object is in use).
+`ov.read("data.h5ad")` returns a plain in-memory `anndata.AnnData`; pass
+`storage="disk"` to keep the matrix on disk. Not every omicverse / scanpy
+function accepts a disk-backed object yet.
 
 The rest of the workflow (`ov.pp.qc`, `preprocess`, `scale`, `pca`, `neighbors`,
 `leiden`, `umap`, `ov.single.find_markers`) is written the same way in all six
