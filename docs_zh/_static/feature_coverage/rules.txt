@@ -1,0 +1,25 @@
+# Coding rules for the omicverse feature-coverage table
+
+Codes: Y native; Y* via an external package or CLI that must be installed separately; P partial; N not provided; ? cannot verify.
+
+- **Y**: the package exports a working, documented-or-tested function for the feature, and everything that function needs is installed with the package (hard dependencies, or code vendored into the package).
+- **Y\***: the feature needs a separately installed package/CLI — either the package calls it (wrapper, optional extra such as `pip install pkg[extra]`, `scanpy.external`, SeuratWrappers) or the package's own docs/tutorials apply it to the package's object as the documented workflow (e.g. Signac on a Seurat object, scVelo on a Scanpy AnnData shown in Scanpy tutorials does NOT count unless Scanpy's own docs present it as the Scanpy workflow).
+- **P**: only part of the feature definition is covered (e.g. only one sub-step, only one platform, experimental/limited), or the implementation is known to be incomplete.
+- **N**: not provided by the package or its documented workflow.
+- Exported-but-undocumented working functions count; companion/reproducibility-repo scripts, blog posts and third-party tutorials do not; functions known to be broken do not.
+- A row covering several methods takes the best path available (native beats external).
+- Evaluate the latest released version as of November 2026 (state the version).
+- Every cell needs evidence: function/class name + a URL (docs page, source file on GitHub, NAMESPACE/API reference). For N, state what you checked (e.g. "API reference has no doublet function; searched docs for 'doublet'").
+
+Column definitions:
+- **omicverse**: the `omicverse` package (github.com/Starlitnightly/omicverse, PyPI omicverse); optional extras count as Y* unless the code is vendored.
+- **Scanpy**: the `scanpy` package; `scanpy.external` wrappers are Y* (they need the external package).
+- **Seurat**: Seurat (+SeuratObject); Signac, SeuratWrappers, Azimuth, etc. are Y*.
+- **rapids-singlecell**: the `rapids_singlecell` package.
+- **brisc**: the brisc package (Wainberg lab).
+- **scvi-tools**: the `scvi-tools` package.
+- **Squidpy**: the `squidpy` package.
+- **muon**: the `muon` package (MuData).
+- **pertpy**: the `pertpy` package.
+- **Bioconductor (OSCA)**: the core OSCA stack scater + scran + scuttle + SingleCellExperiment are Y; other Bioconductor packages used in the OSCA book (batchelor, bluster, SingleR, scDblFinder, DropletUtils, slingshot, ...) are Y*.
+- **BULLKpy**: the BULLKpy package (bioRxiv 10.64898/2026.01.26.701768).
