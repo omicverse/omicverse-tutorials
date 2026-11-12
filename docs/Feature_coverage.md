@@ -1,15 +1,16 @@
 # Feature coverage
 
-OmicVerse covers single-cell, bulk, spatial and other omics in one package. The figure compares its coverage with ten other frameworks over 49 analysis features in 9 categories; each pie shows the share of a category's features that a tool provides natively, through a separately installed package, partially, or not at all.
+OmicVerse covers single-cell, bulk, spatial and other omics in one package. The figure compares its coverage with the scverse ecosystem and ten other frameworks over 75 analysis features in 10 categories; each pie shows the share of a category's features that a tool provides natively, through a separately installed package, partially, or not at all.
 
-<img src="_static/feature_coverage/feature_coverage_light.png" class="only-light" alt="Feature coverage of omicverse and ten other frameworks" style="max-width:100%;" />
-<img src="_static/feature_coverage/feature_coverage_dark.png" class="only-dark" alt="Feature coverage of omicverse and ten other frameworks" style="max-width:100%;" />
+<img src="_static/feature_coverage/feature_coverage_light.png" class="only-light" alt="Feature coverage of omicverse, the scverse ecosystem and ten other frameworks" style="max-width:100%;" />
+<img src="_static/feature_coverage/feature_coverage_dark.png" class="only-dark" alt="Feature coverage of omicverse, the scverse ecosystem and ten other frameworks" style="max-width:100%;" />
 
 ## How the table was built
 
 - Codes: **Y** native (everything needed installs with the package, or is vendored); **Y\*** through a separately installed package or CLI that the package calls or documents as its workflow; **P** partial; **N** not provided.
-- Every cell was checked against the latest release (omicverse 2.4.2, Scanpy 1.12.5, Seurat 6.0.0, rapids-singlecell 0.18.1, brisc 0.2.5, scvi-tools 1.5.2, Squidpy 1.8.4, muon 0.2.1, pertpy 1.5.0, Bioconductor 3.23 (OSCA), BULLKpy 0.3.0) and has a function name and a source or docs link in the evidence table.
-- The 49 features span the scope of OmicVerse, so specialised packages (e.g. Squidpy for spatial, muon for multimodal data, pertpy for perturbations) cover fewer of them by design.
+- Every cell was checked against the latest release (omicverse 2.4.2, Scanpy 1.12.5, Seurat 6.0.0, rapids-singlecell 0.18.1, brisc 0.2.5, scvi-tools 1.5.2, Squidpy 1.8.4, muon 0.2.1, pertpy 1.5.0, Bioconductor 3.23 (OSCA), BULLKpy 0.3.0; scverse core also Scirpy 0.26.1, SnapATAC2 2.10.0, decoupler 2.3.1, AnnData 0.13.4, MuData 0.4.1, SpatialData 0.8.0) and has a function name and a source or docs link in the evidence table.
+- **scverse (ecosystem)** takes, for each feature, the best code among the scverse core packages (Scanpy, Squidpy, muon, scvi-tools, pertpy, rapids-singlecell, Scirpy, SnapATAC2, decoupler, AnnData, MuData, SpatialData), i.e. the ecosystem counted as one toolkit.
+- The 75 features span the scope of OmicVerse, so specialised packages (e.g. Squidpy for spatial, muon for multimodal data, pertpy for perturbations) cover fewer of them by design. One cell was adjusted by the reviewer for consistency (see rule_adjustments in the evidence notes).
 
 Files: [coverage table](_static/feature_coverage/feature_table.tsv) · [per-cell evidence](_static/feature_coverage/feature_evidence.tsv) · [coding rules](_static/feature_coverage/rules.txt)
 
@@ -17,58 +18,84 @@ Files: [coverage table](_static/feature_coverage/feature_table.tsv) · [per-cell
 
 ● native · ◐ via external package · ◔ partial · empty: not provided
 
-| Category | Feature | omicverse | Scanpy | Seurat | rapids-singlecell | brisc | scvi-tools | Squidpy | muon | pertpy | Bioconductor (OSCA) | BULLKpy |
-|---|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| Data & infrastructure | Raw reads to counts | ◐ |  |  |  |  |  |  |  |  |  |  |
-| Data & infrastructure | Out-of-memory / on-disk data | ◐ | ◔ | ◐ | ● |  | ● | ◔ | ◔ |  | ◐ |  |
-| Data & infrastructure | GPU acceleration | ◐ |  |  | ● |  | ● |  | ◔ |  |  |  |
-| Data & infrastructure | Multithreaded CPU kernels | ● | ● | ● |  | ● |  | ● | ● |  | ◐ |  |
-| scRNA-seq core | QC metrics and filtering | ● | ● | ● | ● | ● |  |  | ◔ |  | ● | ◔ |
-| scRNA-seq core | Doublet detection | ● | ● |  | ● | ● | ● |  |  |  | ◐ |  |
-| scRNA-seq core | Ambient RNA removal | ◐ |  |  |  |  | ● |  |  |  | ◐ |  |
-| scRNA-seq core | Normalization and HVG selection | ● | ● | ● | ● | ● | ◔ |  |  |  | ● | ● |
-| scRNA-seq core | Batch integration | ● | ● | ● | ● | ● | ● |  |  |  | ◐ | ● |
-| scRNA-seq core | Clustering and embedding | ● | ◐ | ● | ● | ● |  |  | ◐ |  | ● | ● |
-| scRNA-seq core | Marker genes and differential expression | ● | ● | ● | ● | ◔ | ● |  |  | ● | ● | ● |
-| scRNA-seq core | Pseudobulk differential expression | ● | ◔ | ◐ | ◔ | ◐ |  |  |  | ◐ | ◐ | ◔ |
-| Annotation | Reference-based annotation | ● | ● | ● | ● | ● | ● |  |  |  | ◐ |  |
-| Annotation | Marker-database annotation | ● |  |  |  |  | ● |  |  |  | ◐ |  |
-| Annotation | LLM-based annotation | ● |  |  |  |  |  |  |  |  |  |  |
-| Annotation | Gene set scoring | ● | ● | ● | ● |  |  |  |  | ● | ◐ | ● |
-| scRNA-seq downstream | Trajectory and pseudotime | ◐ | ● | ◐ |  |  | ◔ |  |  |  | ◐ |  |
-| scRNA-seq downstream | RNA velocity | ◐ |  |  |  |  | ● |  |  |  | ◐ |  |
-| scRNA-seq downstream | Cell-cell communication | ● |  |  | ● |  |  | ● |  |  |  |  |
-| scRNA-seq downstream | Gene regulatory networks | ◐ |  |  |  |  |  |  |  |  |  |  |
-| scRNA-seq downstream | Metacells | ● |  |  |  |  |  |  |  |  |  |  |
-| scRNA-seq downstream | Copy-number inference | ◐ |  |  |  |  |  |  |  |  |  |  |
-| scRNA-seq downstream | Cell metabolism | ● |  |  |  |  |  |  |  |  |  |  |
-| scRNA-seq downstream | Perturbation analysis | ● |  | ● | ● |  | ● |  |  | ● |  |  |
-| scRNA-seq downstream | Differential abundance / composition | ● |  |  |  |  | ● |  |  | ● | ◐ |  |
-| Bulk omics | Bulk RNA-seq differential expression | ● |  |  |  | ◐ |  |  |  | ◐ |  | ● |
-| Bulk omics | Co-expression networks | ● |  |  |  |  |  |  |  |  |  |  |
-| Bulk omics | Bulk deconvolution | ◐ |  |  |  |  |  |  |  |  |  |  |
-| Bulk omics | Bulk-to-single-cell mapping | ◐ |  |  |  |  |  |  |  |  |  |  |
-| Bulk omics | Functional enrichment / GSEA | ● | ◐ | ◐ | ● |  |  |  |  | ● | ◐ | ● |
-| Spatial | Spatial data import and graph | ● | ◔ | ● | ◔ |  |  | ● |  |  |  |  |
-| Spatial | Spatially variable genes | ● | ● | ● | ● |  |  | ● |  |  |  |  |
-| Spatial | Spatial domains | ● |  | ● | ● |  |  | ● |  |  |  |  |
-| Spatial | Spatial deconvolution / mapping | ◐ |  | ◐ |  |  | ● |  |  |  |  |  |
-| Spatial | Spatial communication | ● |  |  |  |  |  |  |  |  |  |  |
-| Spatial | Multi-slice alignment | ● |  | ◔ |  |  |  |  |  |  |  |  |
-| Spatial | Image segmentation / binning | ● |  | ◔ |  |  |  | ● |  |  |  |  |
-| Multi-omics & other omics | Chromatin accessibility (scATAC) | ◐ |  | ◐ |  |  | ● |  | ● |  |  |  |
-| Multi-omics & other omics | Multi-omics integration | ● |  | ● |  |  | ● |  | ● |  | ◐ |  |
-| Multi-omics & other omics | Proteomics | ◐ |  |  |  |  |  |  |  |  |  |  |
-| Multi-omics & other omics | Metabolomics / lipidomics | ● |  |  |  |  |  |  |  |  |  |  |
-| Multi-omics & other omics | Microbiome | ◐ |  |  |  |  |  |  |  |  |  |  |
-| Multi-omics & other omics | Immune repertoire (AIRR) | ● |  |  |  |  |  |  |  |  |  |  |
-| Models & AI | Single-cell foundation models | ◐ |  |  |  |  |  |  |  |  |  |  |
-| Models & AI | Deep generative models | ◐ |  | ◐ |  |  | ● |  |  | ● |  |  |
-| Models & AI | Drug response / structure | ◐ |  |  |  |  |  |  |  | ◔ |  |  |
-| Models & AI | Natural-language agent | ● |  |  |  |  |  |  |  |  |  |  |
-| Visualisation | Publication plotting suite | ● | ● | ● |  | ● |  | ● | ◔ | ● | ● | ● |
-| Visualisation | Interactive web interface | ◐ |  |  |  |  |  |  |  |  | ◔ |  |
-| **Total** | Y + Y\* | **49** | **13** | **21** | **15** | **10** | **15** | **7** | **4** | **9** | **19** | **8** |
+| Category | Feature | omicverse | scverse (ecosystem) | Scanpy | Seurat | rapids-singlecell | brisc | scvi-tools | Squidpy | muon | pertpy | Bioconductor (OSCA) | BULLKpy |
+|---|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Data & infrastructure | Raw reads to counts | ◐ |  |  |  |  |  |  |  |  |  |  |  |
+| Data & infrastructure | Out-of-memory / on-disk data | ◐ | ● | ◔ | ◐ | ● |  | ● | ◔ | ◔ |  | ◐ |  |
+| Data & infrastructure | GPU acceleration | ◐ | ● |  |  | ● |  | ● |  | ◔ |  |  |  |
+| Data & infrastructure | Multithreaded CPU kernels | ● | ● | ● | ● |  | ● |  | ● | ● |  | ◐ |  |
+| scRNA-seq core | QC metrics and filtering | ● | ● | ● | ● | ● | ● |  |  | ◔ |  | ● | ◔ |
+| scRNA-seq core | Doublet detection | ● | ● | ● |  | ● | ● | ● |  |  |  | ◐ |  |
+| scRNA-seq core | Ambient RNA removal | ◐ | ● |  |  |  |  | ● |  |  |  | ◐ |  |
+| scRNA-seq core | Normalization and HVG selection | ● | ● | ● | ● | ● | ● | ◔ |  |  |  | ● | ● |
+| scRNA-seq core | Batch integration | ● | ● | ● | ● | ● | ● | ● |  |  |  | ◐ | ● |
+| scRNA-seq core | Clustering and embedding | ● | ● | ◐ | ● | ● | ● |  |  | ◐ |  | ● | ● |
+| scRNA-seq core | Marker genes and differential expression | ● | ● | ● | ● | ● | ◔ | ● |  |  | ● | ● | ● |
+| scRNA-seq core | Pseudobulk differential expression | ● | ◐ | ◔ | ◐ | ◔ | ◐ |  |  |  | ◐ | ◐ | ◔ |
+| Annotation | Reference-based annotation | ● | ● | ● | ● | ● | ● | ● |  |  |  | ◐ |  |
+| Annotation | Marker-database annotation | ● | ● |  |  |  |  | ● |  |  |  | ◐ |  |
+| Annotation | LLM-based annotation | ● |  |  |  |  |  |  |  |  |  |  |  |
+| Annotation | Gene set scoring | ● | ● | ● | ● | ● |  |  |  |  | ● | ◐ | ● |
+| scRNA-seq downstream | Trajectory and pseudotime | ◐ | ● | ● | ◐ |  |  | ◔ |  |  |  | ◐ |  |
+| scRNA-seq downstream | RNA velocity | ◐ | ● |  |  |  |  | ● |  |  |  | ◐ |  |
+| scRNA-seq downstream | Cell-cell communication | ● | ● |  |  | ● |  |  | ● |  |  |  |  |
+| scRNA-seq downstream | Gene regulatory networks | ◐ | ● |  |  |  |  |  |  |  |  |  |  |
+| scRNA-seq downstream | Metacells | ● | ◔ |  |  |  |  |  |  |  |  |  |  |
+| scRNA-seq downstream | Copy-number inference | ◐ |  |  |  |  |  |  |  |  |  |  |  |
+| scRNA-seq downstream | Cell metabolism | ● |  |  |  |  |  |  |  |  |  |  |  |
+| scRNA-seq downstream | Perturbation analysis | ● | ● |  | ● | ● |  | ● |  |  | ● |  |  |
+| scRNA-seq downstream | Differential abundance / composition | ● | ● |  |  |  |  | ● |  |  | ● | ◐ |  |
+| Bulk omics | Bulk RNA-seq differential expression | ● | ◐ |  |  |  | ◐ |  |  |  | ◐ |  | ● |
+| Bulk omics | Co-expression networks | ● |  |  |  |  |  |  |  |  |  |  |  |
+| Bulk omics | Bulk deconvolution | ◐ |  |  |  |  |  |  |  |  |  |  |  |
+| Bulk omics | Bulk-to-single-cell mapping | ◐ |  |  |  |  |  |  |  |  |  |  |  |
+| Bulk omics | Functional enrichment / GSEA | ● | ● | ◐ | ◐ | ● |  |  |  |  | ● | ◐ | ● |
+| Spatial | Spatial data import and graph | ● | ● | ◔ | ● | ◔ |  |  | ● |  |  |  |  |
+| Spatial | Spatially variable genes | ● | ● | ● | ● | ● |  |  | ● |  |  |  |  |
+| Spatial | Spatial domains | ● | ● |  | ● | ● |  |  | ● |  |  |  |  |
+| Spatial | Spatial deconvolution / mapping | ◐ | ● |  | ◐ |  |  | ● |  |  |  |  |  |
+| Spatial | Spatial communication | ● |  |  |  |  |  |  |  |  |  |  |  |
+| Spatial | Multi-slice alignment | ● | ● |  | ◔ |  |  |  |  |  |  |  |  |
+| Spatial | Image segmentation / binning | ● | ● |  | ◔ |  |  |  | ● |  |  |  |  |
+| Multi-omics & other omics | Chromatin accessibility (scATAC) | ◐ | ● |  | ◐ |  |  | ● |  | ● |  |  |  |
+| Multi-omics & other omics | Multi-omics integration | ● | ● |  | ● |  |  | ● |  | ● |  | ◐ |  |
+| Multi-omics & other omics | Proteomics | ◐ |  |  |  |  |  |  |  |  |  |  |  |
+| Multi-omics & other omics | Metabolomics / lipidomics | ● |  |  |  |  |  |  |  |  |  |  |  |
+| Multi-omics & other omics | Microbiome | ◐ |  |  |  |  |  |  |  |  |  |  |  |
+| Multi-omics & other omics | Immune repertoire (AIRR) | ● | ● |  |  |  |  |  |  |  |  |  |  |
+| Models & AI | Single-cell foundation models | ◐ |  |  |  |  |  |  |  |  |  |  |  |
+| Models & AI | Deep generative models | ◐ | ● |  | ◐ |  |  | ● |  |  | ● |  |  |
+| Models & AI | Drug response / structure | ◐ | ◔ |  |  |  |  |  |  |  | ◔ |  |  |
+| Models & AI | Natural-language agent | ● |  |  |  |  |  |  |  |  |  |  |  |
+| Visualisation | Publication plotting suite | ● | ● | ● | ● |  | ● |  | ● | ◔ | ● | ● | ● |
+| Visualisation | Interactive web interface | ◐ | ◔ |  |  |  |  |  |  |  |  | ◔ |  |
+| Annotation | Cross-species annotation | ● | ◔ |  | ◔ |  |  | ◔ |  |  |  |  |  |
+| scRNA-seq downstream | Cell potency and fate drivers | ◐ | ◐ | ◐ |  |  |  |  |  |  |  | ◐ |  |
+| scRNA-seq downstream | Gene expression programs | ● | ● |  |  |  |  | ● |  | ◔ | ● |  |  |
+| Bulk omics | Clinical and survival analysis | ● |  |  |  |  |  |  |  |  |  |  | ● |
+| Bulk omics | Time-course expression | ● | ◐ |  | ◔ |  |  |  |  | ◐ |  |  |  |
+| Bulk omics | Bulk batch correction | ◐ | ● | ● |  |  |  |  |  |  |  |  | ● |
+| Bulk omics | Protein-protein interaction networks | ● |  |  |  |  |  |  |  |  |  |  |  |
+| Spatial | Expression from histology | ◐ |  |  |  |  |  |  |  |  |  |  |  |
+| Spatial | 3D spatial reconstruction | ● | ◔ |  |  |  |  |  |  |  |  |  |  |
+| Spatial | Spatial gradients and transitions | ● | ◔ |  |  |  |  |  | ◔ | ◔ |  |  |  |
+| Multi-omics & other omics | Single-cell Hi-C / 3D genome | ◐ | ● |  |  |  |  |  |  |  |  |  |  |
+| Multi-omics & other omics | Bulk ChIP/ATAC peaks and footprints | ◐ | ◔ |  |  |  |  |  |  |  |  |  |  |
+| Multi-omics & other omics | Flow / mass cytometry | ◐ | ◔ |  |  |  |  | ◔ |  |  |  |  |  |
+| Multi-omics & other omics | Statistical genetics | ◐ |  |  |  |  |  |  |  |  |  |  |  |
+| Multi-omics & other omics | Single-EV proteomics | ● |  |  |  |  |  |  |  |  |  |  |  |
+| Multi-omics & other omics | Microbe-metabolite integration | ● |  |  |  |  |  |  |  |  |  |  |  |
+| Beyond omics | Synthetic biology design | ◐ |  |  |  |  |  |  |  |  |  |  |  |
+| Beyond omics | Molecular dynamics | ◐ |  |  |  |  |  |  |  |  |  |  |  |
+| Beyond omics | Medical imaging | ◐ |  |  |  |  |  |  |  |  |  |  |  |
+| Beyond omics | Neural signals | ● |  |  |  |  |  |  |  |  |  |  |  |
+| Beyond omics | Ecology / animal imaging | ◐ |  |  |  |  |  |  |  |  |  |  |  |
+| Models & AI | MCP tool server | ◐ |  |  |  |  |  |  |  |  |  |  |  |
+| Models & AI | Chat-channel bots | ◐ |  |  |  |  |  |  |  |  |  |  |  |
+| Visualisation | Automated analysis reports | ● |  |  |  |  |  |  |  |  |  |  |  |
+| scRNA-seq core | Lazy / end-to-end pipeline | ◔ | ◔ | ◔ |  |  |  |  |  |  |  |  |  |
+| Data & infrastructure | Function registry and discovery | ● | ● |  |  | ● |  |  |  |  |  |  |  |
+| **Total** | Y + Y\* | **74** | **39** | **15** | **21** | **16** | **10** | **16** | **7** | **5** | **10** | **20** | **10** |
 
 ## Data framework and included tools
 
