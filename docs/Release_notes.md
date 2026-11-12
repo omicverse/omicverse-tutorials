@@ -1819,7 +1819,8 @@ and one `storage=` choice for where the matrix lives.
 
 ### New modules and functions
 - `ov.radiology`: DICOM MR / CT study reading, survey ledger and band
-  measurements (#1041).
+  measurements (#1041); `measure_band_defect` (shading-normalised,
+  conspicuous-slice tear gap) (#1048).
 - `ov.tl`: quantitative susceptibility mapping from multi-echo GRE
   (`qsm_*`, #1039); open-set individual re-identification from images
   (`reid_*`, #1040); leakage-aware ranking of fixed models for transfer to
