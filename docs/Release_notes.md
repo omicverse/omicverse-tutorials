@@ -1841,3 +1841,73 @@ and one `storage=` choice for where the matrix lives.
 - `ov.space`: marker-panel review states (fixed / resolved / open) and robust
   nomenclature lookups (#1047).
 
+
+## v 2.4.3
+
+omicverse no longer needs scanpy, registered functions accept disk-backed
+AnnDataOOM objects, and CPU UMAPs are optimised for as many epochs as
+umap-learn / scanpy use.
+
+### scanpy is optional
+- omicverse's own code no longer imports or calls scanpy (~370 calls in 93
+  files): `pip install omicverse` does not install it; `pip install
+  "omicverse[scanpy]"` (or `[full]`) does. Vendored tools under
+  `omicverse/external` still import scanpy where they need it (#1069).
+- New `ov.pp` functions with scanpy's outputs: `calculate_qc_metrics`,
+  `score_genes`, `diffmap`, `dpt`, `draw_graph`, `dendrogram`, `subsample`;
+  native `regress`, `louvain` and `score_genes_cell_cycle`. Identical to
+  scanpy 1.11.5 on SEA-AD cells (max difference 0; `regress` correlation
+  1.0; Louvain ARI 1.0 with the `louvain` package) (#1069).
+- `legacy-api-wrap`, `umap-learn`, `pynndescent` and `natsort`, which omicverse
+  imports directly, are now dependencies of their own (#1069).
+
+### AnnData and AnnDataOOM
+- Every registered function accepts the disk-backed object from
+  `ov.read(path, storage='disk')`. Functions that need the matrix in memory
+  read it in (after checking the available memory, including the Slurm job
+  limit), run, and write their new or changed `obs` / `var` / `uns` / `obsm` /
+  `obsp` / `layers` entries back to the disk-backed object; functions that
+  stream the matrix themselves are left alone. `ov.utils.to_memory(adata)`
+  gives a plain AnnData for other tools (#1069).
+- `ov.single.get_celltype_marker`, `ov.space.svg(mode='pearsonr')` (block
+  reads, 180 s → 15 s on a Visium slide) and `ov.pl.markers_dotplot` now work
+  on disk-backed data (#1069).
+- `ov.read` keeps `storage='memory'` as the default (#1067, #1068);
+  `anndataoom` and `dask` are dependencies, so `storage='disk'` needs no extra
+  install.
+
+### Fixes
+- `ov.pp.umap`: 500 epochs up to 10,000 cells and 200 above, as umap-learn
+  and scanpy; the CPU default was 10 / 20 epochs (trustworthiness 0.886 →
+  0.989, equal to scanpy) (#1069).
+- Requires `anndataoom-fast>=0.1.6`: the UMAP layout no longer stalls for
+  minutes on small graphs when many OpenMP threads are available (results do
+  not depend on the thread count).
+- `ov.pp.leiden(flavor='igraph')` gives scanpy's labels for the same seed;
+  `flavor` / `n_iterations` / `directed` select the CPU Leiden in
+  `cpu-gpu-mixed` and `gpu` mode (#1069, #1070).
+- `ov.pp.umap(init_pos='paga')`, `ov.pp.regress(layer=...)` (stored the
+  unregressed matrix), palettes for more than 28 categories, scFoundation's
+  MNN correction (returned the uncorrected matrix) and the scGPT preprocessor
+  (log-transformed `X_normed` in place) (#1069).
+- `ov.pp.ambient`: counts stay sparse, `n_jobs` / `random_state` are passed to
+  decontX / scCDC, the SoupX cluster column is resolved like decontX's
+  (#1049).
+
+### New functions
+- `ov.bulk.recover_sample_annotations`, `annotation_batch_center`,
+  `fit_annotation_classifier`: recover missing sample annotations across
+  cohorts with batch-confounded labels, class imbalance or unlabelled
+  cohorts (#1050).
+- `ov.space.markerdb_signatures` / `score_cluster_signatures`: lineage markers
+  from Cell Ontology ancestors, a specificity / contrast conflict rule and
+  increment split axes; failed ontology lookups are not cached (#1066).
+
+### Documentation
+- README: runtime and peak memory on SEA-AD (1.38M cells) for omicverse,
+  brisc, Scanpy, Seurat (BPCells and v6) and rapids-singlecell, and a
+  feature-coverage figure; new docs page *Feature coverage* with the audited
+  table (75 features, 12 columns) and the list of published tools included in
+  omicverse (#1051–#1065).
+- OpenClaw, MCP server and J.A.R.V.I.S. documentation moved to
+  [OmicClaw](https://github.com/omicverse/omicclaw) (#1057).
