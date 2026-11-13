@@ -72,6 +72,17 @@ backend.
    (`transfer_trait_predict`, pooled vs consensus with the reasons it gives).
    Simulated with a known determinant set, so every selection can be scored.
 
+7. **Which haplotypes do the parents carry, and how common are they?** —
+   family-based haplotype inference under biased sampling: two-phase
+   inverse-probability weights for ascertained, phase-validated families
+   (`two_phase_weights`, `haplotype_frequencies`), an ancestry- and
+   community-dependent population haplotype prior with latent shared-family
+   classes chosen on held-out families (`fit_haplotype_prior`), the father's
+   prior given the mother's diplotype, per-interval crossover masses
+   (`fit_crossover_intervals`) and the exact structural identifiability
+   certificate of a family's joint parental state
+   (`structural_identifiability`). Simulated pedigrees with a known truth.
+
 ```{toctree}
 :maxdepth: 1
 
@@ -81,4 +92,5 @@ backend.
 ../Tutorials-genetics/t_genetics_04_sample_qc
 ../Tutorials-genetics/t_transfer_model_ranking
 ../Tutorials-genetics/t_genetics_05_trait_determinants
+../Tutorials-genetics/t_genetics_06_family_haplotypes
 ```
