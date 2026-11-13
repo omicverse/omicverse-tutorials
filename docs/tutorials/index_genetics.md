@@ -81,7 +81,8 @@ backend.
    prior given the mother's diplotype, per-interval crossover masses
    (`fit_crossover_intervals`) and the exact structural identifiability
    certificate of a family's joint parental state
-   (`structural_identifiability`), with `gamete_distribution` and
+   (`structural_identifiability`), with `gamete_distribution`,
+   `offspring_outcome_probability` and
    `genotype_likelihood_arrays`. Simulated pedigrees with a known truth.
 
 ```{toctree}
