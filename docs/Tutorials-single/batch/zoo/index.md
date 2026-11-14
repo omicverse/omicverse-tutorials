@@ -8,8 +8,9 @@ changing one line.
 All ten notebooks ship with **executed outputs** rendered against real
 data — there is no code-only mode. Demos run on a ~6 000-cell subsample
 of the NeurIPS 2021 multi-batch hematopoiesis dataset (3 real donors,
-pre-annotated `cell_type`), except totalVI which uses
-`scvi.data.pbmcs_10x_cite_seq` because it needs real protein counts.
+pre-annotated `cell_type`), except totalVI which uses the 10x PBMC 5k + 10k
+CITE-seq runs from `ov.datasets.cite_seq()` (10 849 cells) because it needs
+real protein counts.
 
 ## CPU-friendly backends
 
@@ -26,15 +27,17 @@ Train on CPU in under a minute on the demo dataset.
 
 Train a neural network on the corrected latent representation. The
 rendered outputs were produced on an H100 in 1.5–5 min per notebook with
-each library's default `max_epochs` (scvi-tools auto-derives ≈400 epochs
-for ~6 k cells; scPoli defaults to 100). For larger datasets a GPU is
+each library's default `max_epochs` (≈400 epochs for ~6 k cells for the scVI
+family; scPoli defaults to 100). scVI / scANVI / totalVI run on omicverse's
+own `ov.vi` models (PyTorch only, no scvi-tools); see [../t_vi](../t_vi.ipynb)
+for the direct API, disk-backed and GPU-mode training. For larger datasets a GPU is
 strongly recommended; on CPU expect 10–30× longer.
 
 | Method | Tutorial | Optional dep | Family | Notes |
 |---|---|---|---|---|
-| scVI | [t_batch_scvi](t_batch_scvi.ipynb) ✅ | `scvi-tools` | Deep VAE | Standard generative scRNA model with batch as covariate. |
-| scANVI | [t_batch_scanvi](t_batch_scanvi.ipynb) ✅ | `scvi-tools` | Deep VAE + classifier head | Semi-supervised; requires `labels_key=`. |
-| totalVI | [t_batch_totalvi](t_batch_totalvi.ipynb) ✅ | `scvi-tools` | Joint RNA + protein VAE | Needs raw protein counts in `obsm[...]`. |
+| scVI | [t_batch_scvi](t_batch_scvi.ipynb) ✅ | `torch` (`ov.vi`) | Deep VAE | Standard generative scRNA model with batch as covariate. |
+| scANVI | [t_batch_scanvi](t_batch_scanvi.ipynb) ✅ | `torch` (`ov.vi`) | Deep VAE + classifier head | Semi-supervised; requires `labels_key=`. |
+| totalVI | [t_batch_totalvi](t_batch_totalvi.ipynb) ✅ | `torch` (`ov.vi`) | Joint RNA + protein VAE | Needs raw protein counts in `obsm[...]`. |
 | scPoli | [t_batch_scpoli](t_batch_scpoli.ipynb) ✅ | `scarches` | Conditional VAE with per-condition prototypes | Two-stage pretraining + fine-tune. |
 | Concord | [t_batch_concord](t_batch_concord.ipynb) ✅ | `concord-sc` | Contrastive learning | Negative-pair contrastive training. |
 
