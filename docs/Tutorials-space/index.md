@@ -59,3 +59,5 @@ See [`he-zoo/index.md`](he-zoo/index.md) for the full overview and recommendatio
 - [STPath zero-shot prediction](he-zoo/t_histo_stpath.ipynb) — Huang et al., *npj Digital Medicine* 2025
 - [STFlow per-slide fine-tune](he-zoo/t_histo_stflow.ipynb) — Huang et al., *ICML 2025* Spotlight
 - [iStar super-resolution](he-zoo/t_histo_istar.ipynb) — Zhang et al., *Nature Biotechnology* 2024
+
+- [SPLIT: real counts and direct R kernel comparison](t_split.ipynb) - measured DLPFC counts, explicitly illustrative reference weights, executed spatial plots and scoped numerical validation.
