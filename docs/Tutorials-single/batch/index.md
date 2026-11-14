@@ -16,6 +16,7 @@ This section has three layers:
 | Layer | Tutorial | When |
 |---|---|---|
 | **1. Recommended workflow** | [t_single_batch](t_single_batch.ipynb) | Day-one user. Side-by-side run of Harmony / ComBat / Scanorama / scVI / scANVI / totalVI / scPoli / CellANOVA / Concord / CCA on the NeurIPS 2021 multi-batch dataset, with `scib-metrics` benchmarking at the end. |
+| **1b. Deep generative models** | [t_vi](t_vi.ipynb) | scVI / scANVI with omicverse's own `ov.vi` models: in memory, trained from disk (AnnDataOOM), GPU mode with Dask, label transfer to a held-out donor, multi-GPU, speed vs. scvi-tools. |
 | **2. Backend zoo** | [zoo/index](zoo/index.md) | You want one focused tutorial per backend — same template (load → preprocess → call → embedding) with method-specific notes on inputs, key params, and traps. 10 tutorials, one per backend. |
 | **3. Just the API** | [api/reference/omicverse.single.batch_correction](../../api/reference/omicverse.single.batch_correction.rst) | You already know the method you want and just need the signature. |
 
@@ -59,9 +60,9 @@ This section has three layers:
 | `'harmony'`    | Embedding (iterative clustering) | no | — | Fast default, atlas-scale, out-of-core. |
 | `'combat'`     | Linear, empirical-Bayes | yes (matrix) | — | When you need a *corrected expression matrix*. |
 | `'scanorama'`  | MNN panorama-stitch | yes (matrix) | scanorama | Differing compositions across batches. |
-| `'scVI'`       | Deep VAE | only via latent | scvi-tools | Atlases with strong technical drift; many batches. |
-| `'scANVI'` / `'SCANVI'` | Deep VAE + semi-supervised classifier | only via latent | scvi-tools | Have partial labels → batch-correct + label-transfer in one. |
-| `'totalVI'` / `'TOTALVI'` | Deep VAE, joint RNA + ADT | only via latent | scvi-tools | CITE-seq / Total-seq, joint protein + RNA correction. |
+| `'scVI'`       | Deep VAE (`ov.vi.SCVI`) | only via latent | torch | Atlases with strong technical drift; many batches; trains from disk. |
+| `'scANVI'` / `'SCANVI'` | Deep VAE + semi-supervised classifier (`ov.vi.SCANVI`) | only via latent | torch | Have partial labels → batch-correct + label-transfer in one. |
+| `'totalVI'` / `'TOTALVI'` | Deep VAE, joint RNA + ADT (`ov.vi.TOTALVI`) | only via latent | torch | CITE-seq / Total-seq, joint protein + RNA correction. |
 | `'scPoli'` / `'SCPOLI'` | Conditional VAE with per-condition prototypes | only via latent | scArches | Reference building + query mapping; multi-condition. |
 | `'CellANOVA'`  | Variance decomposition | yes (denoised) | cellanova | You can designate a control compartment. |
 | `'Concord'`    | Contrastive learning | only via latent | concord-sc | GPU available; contrastive batch removal. |
@@ -78,26 +79,32 @@ branching in your downstream code.
 The mapping lives in `omicverse.single._batch._BATCH_OBSM` and drives the
 `tracked` decorator's diagnostic-viz auto-attachment.
 
-## Kwarg routing for the scvi-tools family
+## The scVI family runs on `ov.vi`
 
-`scVI` / `scANVI` / `totalVI` / `scPoli` take many tunable parameters, split
-between **architecture** (model `__init__`) and **optimisation** (model
-`.train()`). The wrapper introspects each destination's signature and
-routes your `**kwargs` automatically:
+`scVI` / `scANVI` / `totalVI` are trained by **`ov.vi`**, omicverse's own
+PyTorch implementation of these models (scvi-tools API and defaults, no
+scvi-tools dependency). Besides in-memory AnnData it trains directly on
+disk-backed AnnDataOOM (`ov.read(path, storage='disk')`) and Dask-backed
+AnnData (GPU mode) — see [t_vi](t_vi.ipynb).
+
+The wrapper splits your `**kwargs` between the model constructor
+(**architecture**) and `.train()` (**optimisation**) by introspecting both
+signatures:
 
 ```python
 ov.single.batch_correction(
     adata, batch_key="batch", methods="scVI",
-    # Architecture params land in SCVI.__init__:
-    n_latent=20, n_hidden=128, dropout_rate=0.1, gene_likelihood="zinb",
-    # Optimisation params land in SCVI.train:
-    max_epochs=200, batch_size=128, early_stopping=True, accelerator="cuda",
+    # Architecture params land in ov.vi.SCVI(...):
+    n_latent=30, n_hidden=128, n_layers=2, dropout_rate=0.1, gene_likelihood="zinb",
+    # Optimisation params land in SCVI.train(...):
+    max_epochs=200, batch_size=128, early_stopping=True, device="cuda",
 )
 ```
 
-Unknown kwargs warn (and route to whichever destination has `**kwargs` for
-forward-compatibility) rather than silently breaking. The same routing
-applies to scANVI / totalVI / scPoli.
+scvi-tools spellings still work (`accelerator="gpu"` → `device="cuda"`,
+`use_gpu=`, `enable_progress_bar=`); Lightning-only options are dropped.
+Unknown kwargs warn rather than silently breaking. `scPoli` uses the same
+routing against scArches.
 
 ## References
 
@@ -127,5 +134,6 @@ applies to scANVI / totalVI / scPoli.
 :hidden:
 
 t_single_batch
+t_vi
 zoo/index
 ```

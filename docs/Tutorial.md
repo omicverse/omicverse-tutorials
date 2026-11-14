@@ -46,6 +46,7 @@ This page is the markdown overview for the tutorial structure defined in `mkdocs
 - Batch correction
   - [Batch correction overview — backends, decision tree, schema](Tutorials-single/batch/index.md)
   - [Recommended workflow — side-by-side comparison of all backends + scib-metrics](Tutorials-single/batch/t_single_batch.ipynb)
+  - [Deep generative integration with ov.vi — in memory, on disk, on the GPU](Tutorials-single/batch/t_vi.ipynb)
   - [**Backend zoo** › Harmony · ComBat · Scanorama · scVI · scANVI · totalVI · scPoli · CellANOVA · Concord · Seurat-CCA](Tutorials-single/batch/zoo/index.md)
 - Annotation
   - [Reference-free automated single-cell cell type annotation](Tutorials-single/t_anno_noref.ipynb)
