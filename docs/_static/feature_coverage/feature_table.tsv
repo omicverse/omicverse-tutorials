@@ -1,0 +1,76 @@
+id	category	feature	omicverse	scverse (ecosystem)	Scanpy	Seurat	rapids-singlecell	brisc	scvi-tools	Squidpy	muon	pertpy	Bioconductor (OSCA)	BULLKpy
+F01	Data & infrastructure	Raw reads to counts	Y*	N	N	N	N	N	N	N	N	N	N	N
+F02	Data & infrastructure	Out-of-memory / on-disk data	Y*	Y	P	Y*	Y	N	Y	P	P	N	Y*	N
+F03	Data & infrastructure	GPU acceleration	Y*	Y	N	N	Y	N	Y	N	P	N	N	N
+F04	Data & infrastructure	Multithreaded CPU kernels	Y	Y	Y	Y	N	Y	N	Y	Y	N	Y*	N
+F05	scRNA-seq core	QC metrics and filtering	Y	Y	Y	Y	Y	Y	N	N	P	N	Y	P
+F06	scRNA-seq core	Doublet detection	Y	Y	Y	N	Y	Y	Y	N	N	N	Y*	N
+F07	scRNA-seq core	Ambient RNA removal	Y*	Y	N	N	N	N	Y	N	N	N	Y*	N
+F08	scRNA-seq core	Normalization and HVG selection	Y	Y	Y	Y	Y	Y	P	N	N	N	Y	Y
+F09	scRNA-seq core	Batch integration	Y	Y	Y	Y	Y	Y	Y	N	N	N	Y*	Y
+F10	scRNA-seq core	Clustering and embedding	Y	Y	Y*	Y	Y	Y	N	N	Y*	N	Y	Y
+F11	scRNA-seq core	Marker genes and differential expression	Y	Y	Y	Y	Y	P	Y	N	N	Y	Y	Y
+F12	scRNA-seq core	Pseudobulk differential expression	Y	Y*	P	Y*	P	Y*	N	N	N	Y*	Y*	P
+F13	Annotation	Reference-based annotation	Y	Y	Y	Y	Y	Y	Y	N	N	N	Y*	N
+F14	Annotation	Marker-database annotation	Y	Y	N	N	N	N	Y	N	N	N	Y*	N
+F15	Annotation	LLM-based annotation	Y	N	N	N	N	N	N	N	N	N	N	N
+F16	Annotation	Gene set scoring	Y	Y	Y	Y	Y	N	N	N	N	Y	Y*	Y
+F17	scRNA-seq downstream	Trajectory and pseudotime	Y*	Y	Y	Y*	N	N	P	N	N	N	Y*	N
+F18	scRNA-seq downstream	RNA velocity	Y*	Y	N	N	N	N	Y	N	N	N	Y*	N
+F19	scRNA-seq downstream	Cell-cell communication	Y	Y	N	N	Y	N	N	Y	N	N	N	N
+F20	scRNA-seq downstream	Gene regulatory networks	Y*	Y	N	N	N	N	N	N	N	N	N	N
+F21	scRNA-seq downstream	Metacells	Y	P	N	N	N	N	N	N	N	N	N	N
+F22	scRNA-seq downstream	Copy-number inference	Y*	N	N	N	N	N	N	N	N	N	N	N
+F23	scRNA-seq downstream	Cell metabolism	Y	N	N	N	N	N	N	N	N	N	N	N
+F24	scRNA-seq downstream	Perturbation analysis	Y	Y	N	Y	Y	N	Y	N	N	Y	N	N
+F25	scRNA-seq downstream	Differential abundance / composition	Y	Y	N	N	N	N	Y	N	N	Y	Y*	N
+F26	Bulk omics	Bulk RNA-seq differential expression	Y	Y*	N	N	N	Y*	N	N	N	Y*	N	Y
+F27	Bulk omics	Co-expression networks	Y	N	N	N	N	N	N	N	N	N	N	N
+F28	Bulk omics	Bulk deconvolution	Y*	N	N	N	N	N	N	N	N	N	N	N
+F29	Bulk omics	Bulk-to-single-cell mapping	Y*	N	N	N	N	N	N	N	N	N	N	N
+F30	Bulk omics	Functional enrichment / GSEA	Y	Y	Y*	Y*	Y	N	N	N	N	Y	Y*	Y
+F31	Spatial	Spatial data import and graph	Y	Y	P	Y	P	N	N	Y	N	N	N	N
+F32	Spatial	Spatially variable genes	Y	Y	Y	Y	Y	N	N	Y	N	N	N	N
+F33	Spatial	Spatial domains	Y	Y	N	Y	Y	N	N	Y	N	N	N	N
+F34	Spatial	Spatial deconvolution / mapping	Y*	Y	N	Y*	N	N	Y	N	N	N	N	N
+F35	Spatial	Spatial communication	Y	N	N	N	N	N	N	N	N	N	N	N
+F36	Spatial	Multi-slice alignment	Y	Y	N	P	N	N	N	N	N	N	N	N
+F37	Spatial	Image segmentation / binning	Y	Y	N	P	N	N	N	Y	N	N	N	N
+F38	Multi-omics & other omics	Chromatin accessibility (scATAC)	Y*	Y	N	Y*	N	N	Y	N	Y	N	N	N
+F39	Multi-omics & other omics	Multi-omics integration	Y	Y	N	Y	N	N	Y	N	Y	N	Y*	N
+F40	Multi-omics & other omics	Proteomics	Y*	N	N	N	N	N	N	N	N	N	N	N
+F41	Multi-omics & other omics	Metabolomics / lipidomics	Y	N	N	N	N	N	N	N	N	N	N	N
+F42	Multi-omics & other omics	Microbiome	Y*	N	N	N	N	N	N	N	N	N	N	N
+F43	Multi-omics & other omics	Immune repertoire (AIRR)	Y	Y	N	N	N	N	N	N	N	N	N	N
+F44	Models & AI	Single-cell foundation models	Y*	N	N	N	N	N	N	N	N	N	N	N
+F45	Models & AI	Deep generative models	Y*	Y	N	Y*	N	N	Y	N	N	Y	N	N
+F46	Models & AI	Drug response / structure	Y*	P	N	N	N	N	N	N	N	P	N	N
+F47	Models & AI	Natural-language agent	Y	N	N	N	N	N	N	N	N	N	N	N
+F48	Visualisation	Publication plotting suite	Y	Y	Y	Y	N	Y	N	Y	P	Y	Y	Y
+F49	Visualisation	Interactive web interface	Y*	P	N	N	N	N	N	N	N	N	P	N
+F50	Annotation	Cross-species annotation	Y	P	N	P	N	N	P	N	N	N	N	N
+F51	scRNA-seq downstream	Cell potency and fate drivers	Y*	Y*	Y*	N	N	N	N	N	N	N	Y*	N
+F52	scRNA-seq downstream	Gene expression programs	Y	Y	N	N	N	N	Y	N	P	Y	N	N
+F53	Bulk omics	Clinical and survival analysis	Y	N	N	N	N	N	N	N	N	N	N	Y
+F54	Bulk omics	Time-course expression	Y	Y*	N	P	N	N	N	N	Y*	N	N	N
+F55	Bulk omics	Bulk batch correction	Y*	Y	Y	N	N	N	N	N	N	N	N	Y
+F56	Bulk omics	Protein-protein interaction networks	Y	N	N	N	N	N	N	N	N	N	N	N
+F57	Spatial	Expression from histology	Y*	N	N	N	N	N	N	N	N	N	N	N
+F58	Spatial	3D spatial reconstruction	Y	P	N	N	N	N	N	N	N	N	N	N
+F59	Spatial	Spatial gradients and transitions	Y	P	N	N	N	N	N	P	P	N	N	N
+F60	Multi-omics & other omics	Single-cell Hi-C / 3D genome	Y*	Y	N	N	N	N	N	N	N	N	N	N
+F61	Multi-omics & other omics	Bulk ChIP/ATAC peaks and footprints	Y*	P	N	N	N	N	N	N	N	N	N	N
+F62	Multi-omics & other omics	Flow / mass cytometry	Y*	P	N	N	N	N	P	N	N	N	N	N
+F63	Multi-omics & other omics	Statistical genetics	Y*	N	N	N	N	N	N	N	N	N	N	N
+F64	Multi-omics & other omics	Single-EV proteomics	Y	N	N	N	N	N	N	N	N	N	N	N
+F65	Multi-omics & other omics	Microbe-metabolite integration	Y	N	N	N	N	N	N	N	N	N	N	N
+F66	Beyond omics	Synthetic biology design	Y*	N	N	N	N	N	N	N	N	N	N	N
+F67	Beyond omics	Molecular dynamics	Y*	N	N	N	N	N	N	N	N	N	N	N
+F68	Beyond omics	Medical imaging	Y*	N	N	N	N	N	N	N	N	N	N	N
+F69	Beyond omics	Neural signals	Y	N	N	N	N	N	N	N	N	N	N	N
+F70	Beyond omics	Ecology / animal imaging	Y*	N	N	N	N	N	N	N	N	N	N	N
+F71	Models & AI	MCP tool server	Y*	N	N	N	N	N	N	N	N	N	N	N
+F72	Models & AI	Chat-channel bots	Y*	N	N	N	N	N	N	N	N	N	N	N
+F73	Visualisation	Automated analysis reports	Y	N	N	N	N	N	N	N	N	N	N	N
+F74	scRNA-seq core	Lazy / end-to-end pipeline	P	P	P	N	N	N	N	N	N	N	N	N
+F75	Data & infrastructure	Function registry and discovery	Y	Y	N	N	Y	N	N	N	N	N	N	N

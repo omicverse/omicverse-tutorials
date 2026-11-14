@@ -61,6 +61,7 @@ Find a bug? Interested in contributing? Check out our GitHub.
 :titlesonly: true
 
 Installation_guild
+Feature_coverage
 tutorials/index
 omicclaw/index
 api/index

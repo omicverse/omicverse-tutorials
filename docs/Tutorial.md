@@ -19,6 +19,7 @@ This page is the markdown overview for the tutorial structure defined in `mkdocs
 - Preprocessing
   - [Batch correction in Bulk RNA-seq or microarray data](Tutorials-bulk/t_bulk_combat.ipynb)
   - [Multi-site harmonisation with traveling subjects](Tutorials-bulk/t_multisite_harmonize.ipynb)
+  - [Recovering missing sample annotations across cohorts](Tutorials-bulk/t_sample_annotation_recovery.ipynb)
 - Downstream
   - [Different expression analysis](Tutorials-bulk/t_deg.ipynb)
   - [Different expression analysis with DEseq2](Tutorials-bulk/t_deseq2.ipynb)

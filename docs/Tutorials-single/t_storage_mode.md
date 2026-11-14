@@ -19,6 +19,10 @@ adata = ov.read("data.h5ad", storage="disk")  # 2. keep the matrix on disk
 | `cpu-gpu-mixed` | AnnData in RAM | AnnDataOOM; PCA, kNN, UMAP on the GPU |
 | `gpu` | AnnData in RAM, moved to the GPU (RAPIDS) | Row blocks streamed from disk to the GPU (Dask) |
 
+`ov.read("data.h5ad")` returns a plain in-memory `anndata.AnnData`; pass
+`storage="disk"` to keep the matrix on disk. Not every omicverse / scanpy
+function accepts a disk-backed object yet.
+
 The rest of the workflow (`ov.pp.qc`, `preprocess`, `scale`, `pca`, `neighbors`,
 `leiden`, `umap`, `ov.single.find_markers`) is written the same way in all six
 cases.

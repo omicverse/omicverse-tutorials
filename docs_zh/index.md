@@ -61,6 +61,7 @@ OmicVerse 中每个公开函数和类的详细说明。
 :titlesonly: true
 
 Installation_guild
+Feature_coverage
 tutorials/index
 omicclaw/index
 api/index
