@@ -47,6 +47,16 @@ strongly recommended; on CPU expect 10–30× longer.
 |---|---|---|---|---|
 | CellANOVA | [t_batch_cellanova](t_batch_cellanova.ipynb) ✅ | `cellanova` | Variance decomposition | Requires `control_dict={pool_name: [batch_labels]}` mapping cells expected to be biologically homogeneous across batches. |
 
+## Cross-system backend
+
+For integrating **systems** that differ more than ordinary batches —
+species, protocol, modality, organoid vs. tissue — rather than donors/sites
+of the same assay.
+
+| Method | Tutorial | Optional dep | Family | Notes |
+|---|---|---|---|---|
+| SysVI | [t_batch_sysvi](t_batch_sysvi.ipynb) ✅ | `torch` (`ov.vi`) | Deep VAE + VampPrior + latent cycle-consistency | `batch_key` is the *system*; cross-species demo (Baron human vs. mouse pancreas) vs. plain scVI on the same data. |
+
 For the side-by-side comparison of every backend on the same dataset with
 `scib-metrics` scoring at the end, see [../t_single_batch](../t_single_batch.ipynb).
 
@@ -65,6 +75,7 @@ adata.obsm['X_scPoli']         # methods='scPoli'
 adata.obsm['X_cellanova']      # methods='CellANOVA'
 adata.obsm['X_concord']        # methods='Concord'
 adata.obsm['X_cca']            # methods='cca' / 'seurat_cca'
+adata.obsm['X_sysVI']          # methods='sysVI'
 ```
 
 The mapping lives in `omicverse.single._batch._BATCH_OBSM` and drives both
@@ -87,4 +98,5 @@ t_batch_scpoli
 t_batch_cellanova
 t_batch_concord
 t_batch_cca
+t_batch_sysvi
 ```

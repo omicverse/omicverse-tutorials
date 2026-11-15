@@ -5,7 +5,7 @@ donors, sequencing runs, protocols, sites — every downstream analysis you
 care about (clustering, trajectory, CCC) is contaminated by **batch
 effect**: technical variation that pretends to be biology. omicverse exposes
 a single entry point — `ov.single.batch_correction` — that dispatches to
-**ten** backends spanning the methods compared in the
+**eleven** backends spanning the methods compared in the
 [scIB benchmark](https://www.nature.com/articles/s41592-021-01336-8)
 (Luecken et al., 2022, *Nat Methods*) and the recent
 [scIB-E deep-learning extension](https://www.biorxiv.org/content/10.1101/2024.12.09.627450)
@@ -17,7 +17,7 @@ This section has three layers:
 |---|---|---|
 | **1. Recommended workflow** | [t_single_batch](t_single_batch.ipynb) | Day-one user. Side-by-side run of Harmony / ComBat / Scanorama / scVI / scANVI / totalVI / scPoli / CellANOVA / Concord / CCA on the NeurIPS 2021 multi-batch dataset, with `scib-metrics` benchmarking at the end. |
 | **1b. Deep generative models** | [t_vi](t_vi.ipynb) | scVI / scANVI with omicverse's own `ov.vi` models: in memory, trained from disk (AnnDataOOM), GPU mode with Dask, label transfer to a held-out donor, multi-GPU, speed vs. scvi-tools. |
-| **2. Backend zoo** | [zoo/index](zoo/index.md) | You want one focused tutorial per backend — same template (load → preprocess → call → embedding) with method-specific notes on inputs, key params, and traps. 10 tutorials, one per backend. |
+| **2. Backend zoo** | [zoo/index](zoo/index.md) | You want one focused tutorial per backend — same template (load → preprocess → call → embedding) with method-specific notes on inputs, key params, and traps. 11 tutorials, one per backend. |
 | **3. Just the API** | [api/reference/omicverse.single.batch_correction](../../api/reference/omicverse.single.batch_correction.rst) | You already know the method you want and just need the signature. |
 
 ## Recommendation tree
@@ -53,7 +53,7 @@ This section has three layers:
   RNA+ADT)
 ```
 
-## The ten backends
+## The eleven backends
 
 | `methods=` | Family | Touches expression? | Optional dep | When to reach for it |
 |---|---|---|---|---|
@@ -67,6 +67,7 @@ This section has three layers:
 | `'CellANOVA'`  | Variance decomposition | yes (denoised) | cellanova | You can designate a control compartment. |
 | `'Concord'`    | Contrastive learning | only via latent | concord-sc | GPU available; contrastive batch removal. |
 | `'cca'` / `'seurat_cca'` / `'CCA'` | Canonical Correlation Analysis | yes (matrix) | pyccasc | Two-batch pairwise integration; Seurat parity, no R. |
+| `'sysVI'` / `'SysVI'` | Deep VAE + VampPrior + latent cycle-consistency (`ov.vi.SysVI`) | only via latent | torch | Integrating *systems* (species, protocol, modality) too divergent for plain scVI; `batch_key` is the system. |
 
 ## Unified output schema
 
