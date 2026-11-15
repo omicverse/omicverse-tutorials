@@ -17,7 +17,7 @@ This section has three layers:
 |---|---|---|
 | **1. Recommended workflow** | [t_single_batch](t_single_batch.ipynb) | Day-one user. Side-by-side run of Harmony / ComBat / Scanorama / scVI / scANVI / totalVI / scPoli / CellANOVA / Concord / CCA on the NeurIPS 2021 multi-batch dataset, with `scib-metrics` benchmarking at the end. |
 | **1b. Deep generative models** | [t_vi](t_vi.ipynb) | scVI / scANVI with omicverse's own `ov.vi` models: in memory, trained from disk (AnnDataOOM), GPU mode with Dask, label transfer to a held-out donor, multi-GPU, speed vs. scvi-tools. |
-| **2. Backend zoo** | [zoo/index](zoo/index.md) | You want one focused tutorial per backend — same template (load → preprocess → call → embedding) with method-specific notes on inputs, key params, and traps. 10 tutorials, one per backend. |
+| **2. Backend zoo** | [zoo/index](zoo/index.md) | You want one focused tutorial per backend — same template (load → preprocess → call → embedding) with method-specific notes on inputs, key params, and traps. 10 dispatcher backends, plus native `ov.vi` additions such as [zoo/t_batch_drvi](zoo/t_batch_drvi.ipynb) (disentangled, per-dimension-interpretable VAE). |
 | **3. Just the API** | [api/reference/omicverse.single.batch_correction](../../api/reference/omicverse.single.batch_correction.rst) | You already know the method you want and just need the signature. |
 
 ## Recommendation tree
