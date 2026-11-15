@@ -34,6 +34,17 @@ R upstream (`dynverse/dyneval`), with metric drift `|Δ| < 0.07` across the
 For Slingshot (the recommended outer-level backend), see
 [../t_traj_slingshot](../t_traj_slingshot.ipynb).
 
+## Deep generative trajectory model (`ov.vi`)
+
+Unlike the `TrajInfer` backends above, Decipher is a generative model
+(`ov.vi.Decipher` / `ov.single.decipher`) that *jointly learns* a 2-D
+interpretable latent space and the trajectory through it, rather than
+ordering cells in a pre-existing embedding.
+
+| Method | Tutorial | Strength |
+|---|---|---|
+| Decipher | [t_traj_decipher](t_traj_decipher.ipynb) | Learns its own 2-D "decipher space" (no separate UMAP step); `ov.vi.Trajectory` + `compute_decipher_time` + imputed gene patterns along it. No scvi-tools / Pyro needed. |
+
 ```{toctree}
 :maxdepth: 1
 :hidden:
@@ -53,4 +64,5 @@ t_traj_destiny
 t_traj_urd
 t_traj_monocle3
 t_traj_cytotrace_bio
+t_traj_decipher
 ```

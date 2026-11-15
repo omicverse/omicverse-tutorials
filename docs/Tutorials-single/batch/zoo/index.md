@@ -1,16 +1,18 @@
 # Batch-correction — backend zoo
 
 This zoo holds one tutorial per `ov.single.batch_correction(methods=...)`
-backend. Every tutorial follows the same template — load → preprocess →
-call → embedding plot → key params → related — so you can swap methods by
-changing one line.
+backend, plus a few native `ov.vi` models whose per-dimension interpretability
+doesn't fit the dispatcher's one-call pattern (below). Every tutorial follows
+the same template — load → preprocess → call → embedding plot → key params →
+related — so you can swap methods by changing one line.
 
-All ten notebooks ship with **executed outputs** rendered against real
+All notebooks ship with **executed outputs** rendered against real
 data — there is no code-only mode. Demos run on a ~6 000-cell subsample
 of the NeurIPS 2021 multi-batch hematopoiesis dataset (3 real donors,
 pre-annotated `cell_type`), except totalVI which uses the 10x PBMC 5k + 10k
 CITE-seq runs from `ov.datasets.cite_seq()` (10 849 cells) because it needs
-real protein counts.
+real protein counts. The native `ov.vi` additions below run on the full
+27 423-cell dataset (same donors, no subsample).
 
 ## CPU-friendly backends
 
@@ -47,8 +49,29 @@ strongly recommended; on CPU expect 10–30× longer.
 |---|---|---|---|---|
 | CellANOVA | [t_batch_cellanova](t_batch_cellanova.ipynb) ✅ | `cellanova` | Variance decomposition | Requires `control_dict={pool_name: [batch_labels]}` mapping cells expected to be biologically homogeneous across batches. |
 
-For the side-by-side comparison of every backend on the same dataset with
-`scib-metrics` scoring at the end, see [../t_single_batch](../t_single_batch.ipynb).
+## Cross-system backend
+
+For integrating **systems** that differ more than ordinary batches —
+species, protocol, modality, organoid vs. tissue — rather than donors/sites
+of the same assay.
+
+| Method | Tutorial | Optional dep | Family | Notes |
+|---|---|---|---|---|
+| SysVI | [t_batch_sysvi](t_batch_sysvi.ipynb) ✅ | `torch` (`ov.vi`) | Deep VAE + VampPrior + latent cycle-consistency | `batch_key` is the *system*; cross-species demo (Baron human vs. mouse pancreas) vs. plain scVI on the same data. |
+
+
+## Interpretable latent-space backends (native `ov.vi`, outside the dispatcher)
+
+Trained directly through `ov.vi.<Model>` rather than
+`ov.single.batch_correction` — not in `_BATCH_OBSM` below.
+
+| Method | Tutorial | Family | Notes |
+|---|---|---|---|
+| DRVI | [t_batch_drvi](t_batch_drvi.ipynb) ✅ | Disentangled VAE (`ov.vi.DRVI`) | Additive, per-latent-dimension decoder — `model.differential_vars(dim)` / `latent_traverse()` make a single dimension's gene program and cell-type association directly interpretable, at some cost in batch-mixing strength vs. scVI. |
+
+For the side-by-side comparison of every dispatcher backend on the same
+dataset with `scib-metrics` scoring at the end, see
+[../t_single_batch](../t_single_batch.ipynb).
 
 ## Architecture
 
@@ -65,6 +88,7 @@ adata.obsm['X_scPoli']         # methods='scPoli'
 adata.obsm['X_cellanova']      # methods='CellANOVA'
 adata.obsm['X_concord']        # methods='Concord'
 adata.obsm['X_cca']            # methods='cca' / 'seurat_cca'
+adata.obsm['X_sysVI']          # methods='sysVI'
 ```
 
 The mapping lives in `omicverse.single._batch._BATCH_OBSM` and drives both
@@ -87,4 +111,6 @@ t_batch_scpoli
 t_batch_cellanova
 t_batch_concord
 t_batch_cca
+t_batch_sysvi
+t_batch_drvi
 ```
