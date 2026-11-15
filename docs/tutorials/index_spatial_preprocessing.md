@@ -9,6 +9,7 @@ Tutorials for spatial transcriptomics data preprocessing.
 ../Tutorials-space/t_cellpose
 ../Tutorials-space/t_nanostring_preprocess
 ../Tutorials-space/t_xenium_preprocess
+../Tutorials-space/t_xenium_resolvi
 ../Tutorials-space/t_atera_preprocess
 ../Tutorials-space/t_visium_hd_preprocess
 ../Tutorials-space/t_staligner
