@@ -31,6 +31,10 @@ This page mirrors the `Single` section in `mkdocs.yml`.
 
 - [Cross-species integration via orthologs (Ensembl BioMart + Harmony/scVI)](t_cross_species.ipynb)
 
+## Sample-level cohort analysis
+
+- [Sample-level cohort analysis with MrVI — latent hierarchy, donor distances, DA/DE](t_single_mrvi.ipynb)
+
 ## Annotation
 
 - [Reference-free automated single-cell cell type annotation](t_anno_noref.ipynb)
