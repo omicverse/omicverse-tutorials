@@ -1,7 +1,8 @@
 # Single-Cell Transcriptomics
 
-Tutorials for the complete single-cell workflow: alignment, preprocessing,
-annotation, trajectory analysis, cell-structure analysis, velocity, and multi-omics.
+Tutorials for the complete single-cell workflow: alignment, preprocessing, batch
+correction, sample-level cohort analysis, annotation, trajectory analysis,
+cell-structure analysis, velocity, and multi-omics.
 
 ```{toctree}
 :maxdepth: 2
@@ -9,6 +10,7 @@ annotation, trajectory analysis, cell-structure analysis, velocity, and multi-om
 index_single_alignment
 index_single_preprocessing
 index_single_batch
+index_single_cohort
 index_single_annotation
 index_single_metacell
 index_single_trajectory
