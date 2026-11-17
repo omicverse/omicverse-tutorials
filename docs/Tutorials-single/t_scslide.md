@@ -5,8 +5,8 @@ This tutorial describes the adapter proposed in
 [OmicVerse PR #1098](https://github.com/omicverse/omicverse/pull/1098), with this
 guide tracked in [tutorial PR #145](https://github.com/omicverse/omicverse-tutorials/pull/145).
 The real-backend comparison and fresh-kernel notebook execution have passed with
-the exact reviewed wheel. Upstream merge and public backend distribution remain
-separate release steps; an installed OmicVerse release may not include this API.
+the exact reviewed wheel, which is now publicly installable. The OmicVerse adapter
+still awaits upstream merge; an installed OmicVerse release may not include this API.
 :::
 
 scSLIDE represents each **sample** through its distribution of cells near
@@ -17,19 +17,19 @@ copying or changing its numerical algorithms.
 
 ## Installation and availability
 
-Use an OmicVerse development checkout containing `ov.single.scslide`. Install the
-approved independent `scslide-py` artifact with its `[anndata]` extra. The source
-package is maintained at <https://github.com/LCGaoZzz/scSLIDE-py>; public distribution
-availability must be resolved before the guide is merged for public use. No PyPI
-publication is assumed. For review, use the exact artifact and constraints from
-that repository:
+Use an OmicVerse development checkout containing `ov.single.scslide`. The
+independent backend is available from the public
+[scSLIDE-py repository](https://github.com/LCGaoZzz/scSLIDE-py).
+In a Python 3.11 environment, install the exact reviewed wheel with its `[anndata]`
+extra and verified constraints. No GitHub authentication or PyPI release is required:
 
 ```bash
-cd scSLIDE-py
-(cd artifacts && sha256sum -c SHA256SUMS)
-python -m pip install -c constraints/verified-primary-py311.txt \
-  "./artifacts/scslide_py-0.3.3-py3-none-any.whl[anndata]"
+python -m pip install --constraint "https://raw.githubusercontent.com/LCGaoZzz/scSLIDE-py/57605d55054a3c26b0d30721f696ef67eab1809d/constraints/verified-primary-py311.txt" \
+  "scslide-py[anndata] @ https://raw.githubusercontent.com/LCGaoZzz/scSLIDE-py/57605d55054a3c26b0d30721f696ef67eab1809d/artifacts/scslide_py-0.3.3-py3-none-any.whl#sha256=02043e3c1215320beca93c9ce58645f4fdebf29796dbbdc30d7ce00a580aacbd"
 ```
+
+Both public artifact downloads have been checked against their complete SHA256
+values; see the [publication receipt](https://github.com/LCGaoZzz/scSLIDE-py/blob/main/docs/PUBLICATION.md).
 
 The audited backend candidate is version 0.3.3, wheel SHA256
 `02043e3c1215320beca93c9ce58645f4fdebf29796dbbdc30d7ce00a580aacbd`.
