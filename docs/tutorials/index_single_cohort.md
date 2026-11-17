@@ -10,4 +10,5 @@ rather than a signal to characterise.
 :maxdepth: 1
 
 ../Tutorials-single/t_single_mrvi
+../Tutorials-single/t_scslide
 ```

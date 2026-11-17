@@ -8,7 +8,7 @@ import omicverse as ov
 
 This page is auto-generated from `@register_function` entries in the OmicVerse registry.
 
-Public registry entries listed here: 414
+Public registry entries listed here: 415
 
 ```{eval-rst}
 .. currentmodule:: omicverse
@@ -200,6 +200,7 @@ Public registry entries listed here: 414
    single.run_liana
    single.scanpy_cellanno_from_dict
    single.SCENIC
+   single.scslide
    single.TrajInfer
    single.Velo
 ```
