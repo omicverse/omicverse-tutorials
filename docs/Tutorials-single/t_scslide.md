@@ -1,10 +1,12 @@
 # Sample-level cell-state distributions with scSLIDE
 
 :::{warning}
-Contribution draft. The adapter and tutorial need the independent `scslide-py`
-backend to be publicly installable, a real-backend integration run, and an executed
-notebook before this page is merged as a verified tutorial. The submitted notebook
-contains no fabricated outputs. Rendering documentation does not execute it.
+This tutorial describes the adapter proposed in
+[OmicVerse PR #1098](https://github.com/omicverse/omicverse/pull/1098), with this
+guide tracked in [tutorial PR #145](https://github.com/omicverse/omicverse-tutorials/pull/145).
+The real-backend comparison and fresh-kernel notebook execution have passed with
+the exact reviewed wheel. Upstream merge and public backend distribution remain
+separate release steps; an installed OmicVerse release may not include this API.
 :::
 
 scSLIDE represents each **sample** through its distribution of cells near
@@ -18,8 +20,16 @@ copying or changing its numerical algorithms.
 Use an OmicVerse development checkout containing `ov.single.scslide`. Install the
 approved independent `scslide-py` artifact with its `[anndata]` extra. The source
 package is maintained at <https://github.com/LCGaoZzz/scSLIDE-py>; public distribution
-availability must be resolved before this draft is marked ready. Do not claim a
-successful PyPI installation before that upload actually exists.
+availability must be resolved before the guide is merged for public use. No PyPI
+publication is assumed. For review, use the exact artifact and constraints from
+that repository:
+
+```bash
+cd scSLIDE-py
+(cd artifacts && sha256sum -c SHA256SUMS)
+python -m pip install -c constraints/verified-primary-py311.txt \
+  "./artifacts/scslide_py-0.3.3-py3-none-any.whl[anndata]"
+```
 
 The audited backend candidate is version 0.3.3, wheel SHA256
 `02043e3c1215320beca93c9ce58645f4fdebf29796dbbdc30d7ce00a580aacbd`.
@@ -82,7 +92,7 @@ square `.obsp` slot.
 
 ```python
 import scanpy as sc
-sc.pl.embedding(sample_adata, basis="scslide_diffmap", color="condition")
+sc.pl.embedding(sample_adata, basis="scslide_diffmap", color="condition", size=100)
 sample_adata.write_h5ad("scslide_samples.h5ad")
 result.diffusion.embeddings.to_csv("sample_diffusion_source_data.csv")
 result.sample_object.counts.to_csv("landmark_by_sample_counts.csv")
