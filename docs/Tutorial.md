@@ -172,6 +172,7 @@ This page is the markdown overview for the tutorial structure defined in `mkdocs
 ## Ecology & Wildlife Monitoring
 
 - [Open-set individual re-identification from photos](Tutorials-ecology/t_animal_reid.ipynb) — re-ID embeddings, SIFT+RANSAC verification calibrated on a random-pair null, a gallery of catalogued animals against new photographs, and choosing the number of individuals from data (ARI and abundance error on simulated spotted animals)
+- [Small-area estimation for monitoring surveys](Tutorials-ecology/t_small_area_estimation.ipynb) — reference-population priors, group-varying Fay-Herriot coefficients chosen by held-out CRPS, exact joint posterior draws, benchmarking to published aggregates, CRPS / PIT / energy-score checks on simulated surveys with known truth
 
 ## Radiology
 
