@@ -9,6 +9,7 @@ This page is the markdown overview for the tutorial structure defined in `mkdocs
 - [Tumour/normal sample QC from aligned reads at a SNP panel](Tutorials-genetics/t_genetics_04_sample_qc.ipynb)
 - [Choosing a pre-trained genomic model for a new cell context (transfer ranking)](Tutorials-genetics/t_transfer_model_ranking.ipynb)
 - [Genotype to phenotype: trait determinants, effect modifiers and transfer to an unlabelled agent](Tutorials-genetics/t_genetics_05_trait_determinants.ipynb)
+- [Family haplotypes under biased sampling: population priors, recombination and identifiability](Tutorials-genetics/t_genetics_06_family_haplotypes.ipynb)
 
 ## Bulk Transcriptomics
 
