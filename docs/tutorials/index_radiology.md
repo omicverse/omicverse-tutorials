@@ -6,10 +6,14 @@ coordinates and plane classification, contrast class from TR / TE / TI, survey
 sheets whose cells map back to millimetres, a read ledger that votes on the
 principal finding, signal profiles along a traced structure, and distances in
 millimetres. The notebook builds its own synthetic DICOM study with a known
-defect, so every recovered number can be compared with the truth.
+defect, so every recovered number can be compared with the truth. A second
+notebook measures vertebral alignment (spondylolisthesis) level by level on a
+sagittal spine phantom with a known slip, and shows how a measured slip enters
+the read ledger and the principal-finding draft.
 
 ```{toctree}
 :maxdepth: 1
 
 ../Tutorials-radiology/t_radiology_band_defect
+../Tutorials-radiology/t_radiology_spine_alignment
 ```
