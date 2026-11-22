@@ -12,4 +12,5 @@ abundance estimate can be scored against the truth.
 :maxdepth: 1
 
 ../Tutorials-ecology/t_animal_reid
+../Tutorials-ecology/t_small_area_estimation
 ```
