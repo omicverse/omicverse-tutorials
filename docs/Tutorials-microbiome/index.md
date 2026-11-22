@@ -10,3 +10,7 @@ End-to-end 16S / amplicon analysis via `ov.alignment` — raw FASTQ → AnnData
 - [DADA2 backend (pure-Python via pydada2)](t_16s_dada2.ipynb)
 - [Differential abundance: Wilcoxon vs DESeq2 vs ANCOM-BC](t_16s_da_comparison.ipynb)
 - [Cross-cohort 16S meta-analysis (combine_studies + meta_da)](t_16s_meta_analysis.ipynb)
+
+## Stained smears (microscopy)
+
+- [Gram-stain smear calls that generalise to new laboratories and species](t_gram_smear.ipynb)
