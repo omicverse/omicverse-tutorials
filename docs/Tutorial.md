@@ -174,6 +174,10 @@ This page is the markdown overview for the tutorial structure defined in `mkdocs
 - [Open-set individual re-identification from photos](Tutorials-ecology/t_animal_reid.ipynb) — re-ID embeddings, SIFT+RANSAC verification calibrated on a random-pair null, a gallery of catalogued animals against new photographs, and choosing the number of individuals from data (ARI and abundance error on simulated spotted animals)
 - [Small-area estimation for monitoring surveys](Tutorials-ecology/t_small_area_estimation.ipynb) — reference-population priors, group-varying Fay-Herriot coefficients chosen by held-out CRPS, exact joint posterior draws, benchmarking to published aggregates, CRPS / PIT / energy-score checks on simulated surveys with known truth
 
+## Clinical records
+
+- [Auditing a clinical record extract for data-entry errors](Tutorials-clinical/t_clinical_record_audit.ipynb) — schema inference with nested person > admission > stay ids and minute-offset times, after-death / cross-stay / unit-factor / duplicate rules, severity ranking, scored against injected errors on a synthetic ICU cohort
+
 ## Radiology
 
 - [Reading a band-like structure on a multi-sequence MR study](Tutorials-radiology/t_radiology_band_defect.ipynb) — DICOM geometry and plane classification, contrast class from TR/TE/TI, survey sheets with cell→mm mapping, a read ledger that votes on the principal finding, and a defect measured in millimetres on a synthetic study
