@@ -1,0 +1,27 @@
+name: check-toctree
+
+on:
+  pull_request:
+    paths:
+      - "docs/**"
+      - "docs_zh/**"
+      - "scripts/check_toctree.py"
+      - ".github/workflows/check-toctree.yml"
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "docs_zh/**"
+      - "scripts/check_toctree.py"
+      - ".github/workflows/check-toctree.yml"
+
+jobs:
+  toctree:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check that every page is in a toctree (or marked orphan)
+        run: python scripts/check_toctree.py docs docs_zh
