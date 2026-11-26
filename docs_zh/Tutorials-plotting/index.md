@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # 绘图教程
 
 本页面对应`mkdocs.yml`中的`Plotting`部分。

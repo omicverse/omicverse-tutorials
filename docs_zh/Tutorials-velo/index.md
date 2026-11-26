@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # RNA速率分析教程
 
 本页面对应`mkdocs.yml`中的`Velo`部分。

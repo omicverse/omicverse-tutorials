@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Tutorials of Bulk RNA-seq
 
 This page mirrors the `Bulk` section in `mkdocs.yml`.

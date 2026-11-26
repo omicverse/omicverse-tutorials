@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # 单细胞 RNA-seq 教程
 
 本页面反映了 `mkdocs.yml` 中的 `Single` 部分。

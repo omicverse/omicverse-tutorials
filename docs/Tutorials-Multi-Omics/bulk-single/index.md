@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Bulk ↔ Single-cell ↔ Spatial
 
 Tutorials for translating between **bulk RNA-seq**, **single-cell RNA-seq**, and **spatial transcriptomics**.

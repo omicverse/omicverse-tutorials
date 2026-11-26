@@ -8,5 +8,6 @@ data integration across multiple single-cell datasets.
 
 ../Tutorials-single/batch/index
 ../Tutorials-single/batch/t_single_batch
+../Tutorials-single/t_cross_species
 ../Tutorials-single/batch/zoo/index
 ```

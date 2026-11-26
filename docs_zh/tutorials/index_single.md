@@ -20,6 +20,7 @@
 ../Tutorials-single/t_preprocess_gpu
 ../Tutorials-single/t_cluster
 ../Tutorials-single/t_single_batch
+../Tutorials-single/t_cross_species
 ../Tutorials-single/t_cnmf
 ../Tutorials-single/t_lazy
 ```
@@ -31,7 +32,8 @@
 
 ../Tutorials-single/t_anno_noref
 ../Tutorials-single/t_anno_ref
-../Tutorials-single/t_cellvote
+../Tutorials-single/t_cellvote_pbmc3k
+../Tutorials-single/t_nocd
 ../Tutorials-single/t_cellmatch
 ../Tutorials-single/anno-zoo/index
 ```
@@ -53,6 +55,7 @@
 ../Tutorials-single/t_via_velo
 ../Tutorials-single/t_cellfate_gene
 ../Tutorials-single/t_cellfate
+../Tutorials-single/t_cellfate_genesets
 ```
 
 ## 细胞结构
@@ -60,7 +63,6 @@
 ```{toctree}
 :maxdepth: 1
 
-../Tutorials-single/t_metacells
 ../Tutorials-single/t_deg_single
 ../Tutorials-single/t_scdeg
 ../Tutorials-single/t_scenic

@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Plotting Tutorials
 
 This page mirrors the `Plotting` section in `mkdocs.yml`.

@@ -61,8 +61,10 @@ Find a bug? Interested in contributing? Check out our GitHub.
 :titlesonly: true
 
 Installation_guild
+Example_dataset
 Feature_coverage
 tutorials/index
+omicverse_web_tutorial_en
 omicclaw/index
 api/index
 Release_notes

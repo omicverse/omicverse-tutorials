@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # OmicVerse Web 使用教程
 
 OmicVerse Web 是一个基于浏览器的单细胞 / 多组学分析平台，将 OmicVerse 的全部分析能力封装成可视化界面，无需编写代码即可完成从数据导入到结果输出的完整流程。

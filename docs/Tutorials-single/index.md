@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Tutorial of single cell RNA-seq
 
 This page mirrors the `Single` section in `mkdocs.yml`.

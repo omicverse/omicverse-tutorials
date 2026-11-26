@@ -11,4 +11,5 @@ Tutorials for trajectory inference and cell-fate analysis.
 ../Tutorials-single/trajectory/zoo/index
 ../Tutorials-single/t_cellfate_gene
 ../Tutorials-single/t_cellfate
+../Tutorials-single/t_cellfate_genesets
 ```
