@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # HE-zoo — predicting spatial transcriptomics from H&E
 
 `ov.space.histo` predicts spatial gene-expression from a hematoxylin-and-eosin (H&E) histology slide. It wraps the strongest 2024–2026 methods behind one dispatcher so you can swap backends without re-staging your data:

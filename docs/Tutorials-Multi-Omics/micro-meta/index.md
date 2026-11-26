@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Microbe ↔ Metabolite paired integration
 
 Tutorials that fuse `ov.micro` (16S / amplicon counts) with `ov.metabol`

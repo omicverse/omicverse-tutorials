@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # 🧬 OmicVerse 安装指南
 
 > 📚 For English version, please check [Installation Guide (English)](Installation_guild.md)

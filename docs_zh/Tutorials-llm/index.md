@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # AI和基础模型教程
 
 本页面是`mkdocs.yml`中当前公开的AI相关教程的markdown概览。

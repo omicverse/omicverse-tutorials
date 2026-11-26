@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Translation Project Completion Report
 
 ## Project Summary

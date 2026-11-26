@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Jupyter Notebook Translation Report
 
 **Project:** OmicVerse Tutorials - Spatial Transcriptomics Notebooks

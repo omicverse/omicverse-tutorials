@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Tutorials of Proteomics
 
 `ov.protein` is the AnnData-native downstream framework for **bulk

@@ -13,4 +13,7 @@ Deploy OmicClaw as a messaging bot and connect it to your preferred channel.
 ../Tutorials-jarvis/t_channel_qq
 ../Tutorials-jarvis/t_session_commands
 ../Tutorials-jarvis/t_troubleshooting
+../Tutorials-jarvis/t_claw_cli
+../Tutorials-jarvis/t_claw_openclaw
+../Tutorials-jarvis/t_registry_agent_method
 ```

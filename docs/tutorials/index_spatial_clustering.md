@@ -10,4 +10,5 @@ Tutorials for spatial-domain clustering and denoising. All five methods share th
 ../Tutorials-space/cluster/t_cluster_stagate
 ../Tutorials-space/cluster/t_cluster_cast
 ../Tutorials-space/cluster/t_cluster_banksy
+../Tutorials-space/t_cluster_space
 ```

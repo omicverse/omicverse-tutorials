@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Tutorials of Microbiome
 
 End-to-end 16S / amplicon analysis via `ov.alignment` — raw FASTQ → AnnData

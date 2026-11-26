@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Tutorials of Metabolomics
 
 The tutorials start from a peak intensity table (produced upstream by XCMS / MZmine / MS-DIAL / MetaboAnalyst) and cover the full downstream workflow: QC, batch correction, statistics (two-group + multi-factor + time-series), biomarker discovery, correlation networks, multi-omics integration, and a real-data case study on a public Metabolights dataset.

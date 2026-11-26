@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Tutorials of Immune Repertoire (AIRR-seq)
 
 End-to-end adaptive immune receptor repertoire (AIRR-seq: TCR / BCR)

@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Tutorials of Flow Cytometry
 
 Tutorials for the `omicverse.flow` module — flow, spectral and mass cytometry.

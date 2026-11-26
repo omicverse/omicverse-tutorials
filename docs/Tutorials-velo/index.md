@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Velocity Tutorials
 
 This page mirrors the `Velo` section in `mkdocs.yml`.

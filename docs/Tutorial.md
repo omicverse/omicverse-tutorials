@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Tutorials
 
 This page is the markdown overview for the tutorial structure defined in `mkdocs.yml`. It is meant to help readers scan the current OmicVerse tutorial map before jumping into notebooks or topic-specific guides.

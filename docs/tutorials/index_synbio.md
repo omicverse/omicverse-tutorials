@@ -29,6 +29,14 @@ phosphofructokinase — and closes with the A↔B coupling.
 ../Tutorials-synbio/t_synbio_02_circuits_to_pathways
 ../Tutorials-synbio/t_synbio_03_crispr_library
 ../Tutorials-synbio/t_synbio_04_advanced
+../Tutorials-synbio/t_synbio_05_strain_from_scratch
+../Tutorials-synbio/t_synbio_06_design_to_order
+../Tutorials-synbio/t_synbio_07_dbtl_cycle
+../Tutorials-synbio/t_synbio_08_build_and_order
+../Tutorials-synbio/t_synbio_09_assays
+../Tutorials-synbio/t_synbio_10_expression_tuning
+../Tutorials-synbio/t_synbio_11_continuous_doe
+../Tutorials-synbio/t_synbio_12_flux_toolkit
 ../Tutorials-synbio/t_synbio_13_variant_active_learning
 ../Tutorials-synbio/t_synbio_case01_succinate
 ../Tutorials-synbio/t_synbio_case02_dhfr_engineering

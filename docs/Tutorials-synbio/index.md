@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Tutorials of Synthetic Biology
 
 Tutorials for the `omicverse.synbio` module — a self-contained **three-layer

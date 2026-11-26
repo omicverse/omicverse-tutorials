@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # AI and Foundation Model Tutorials
 
 This page is a markdown overview for the AI-related tutorials currently exposed in `mkdocs.yml`.

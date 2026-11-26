@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Tutorials of Spatial Transcriptomics
 
 This page mirrors the `Space` section in `mkdocs.yml` and provides a markdown entry point for the spatial tutorial notebooks.

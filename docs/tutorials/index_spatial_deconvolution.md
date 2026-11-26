@@ -10,4 +10,5 @@ Tutorials for spatial transcriptomics deconvolution.
 ../Tutorials-space/t_decov_rctd
 ../Tutorials-space/t_flashdeconv
 ../Tutorials-space/t_starfysh_new
+../Tutorials-space/t_mapping
 ```

@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Spatial clustering and denoising expressions
 
 Spatial clustering, which shares an analogy with single-cell clustering, has expanded the scope of tissue physiology studies from cell-centroid to structure-centroid with spatially resolved transcriptomics (SRT) data.

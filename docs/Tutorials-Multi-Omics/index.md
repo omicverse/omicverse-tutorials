@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Multi-Omics
 
 Tutorials that span **more than one modality** — converting between bulk RNA-seq, single-cell RNA-seq, and spatial transcriptomics, or otherwise integrating across omics layers.
