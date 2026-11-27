@@ -1,110 +1,79 @@
 # scFoundation
 
-✅ **Status:** Ready | **Version:** xTrimoGene
+**Status in `ov.llm`: integrated** (model type `"scfoundation"`, class `ScFoundationModel`).
 
----
+## What it is
 
-## Overview
+**scFoundation** (xTrimoGene) is a large-scale asymmetric encoder-decoder transformer over a fixed 19,264-gene vocabulary. In `ov.llm` (`ScFoundationModel`) it provides cell embeddings, linear-probe fine-tuning for annotation, and batch integration through embeddings plus post-hoc correction.
 
-Large-scale asymmetric Transformer (xTrimoGene) with a custom 19,264-gene vocabulary, pretrained for perturbation/drug-response tasks
+Reference: Hao, M. et al. Large-scale foundation model on single-cell transcriptomics. *Nature Methods* 21, 1481–1491 (2024). Code: <https://github.com/biomap-research/scFoundation>
 
-!!! tip "When to choose scFoundation"
+## Supported tasks in `ov.llm`
 
-    Use it when you need perturbation prediction, drug-response modeling, or the xTrimoGene gene vocabulary
+| Task | Call | Notes |
+|---|---|---|
+| embedding | `model.get_embeddings(adata, output_type="cell", pool_type="all")` | Cell embedding is 3072-dimensional in the executed tutorial |
+| annotation | `model.fine_tune(train_adata=...)` → `model.predict_celltypes(adata)` / `model.predict_with_finetune(adata)` / `model.predict(adata, task="annotation")` | Linear-probe fine-tuning (`frozen_more=True` freezes token/position embeddings) |
+| integration | `model.predict(adata, task="integration", batch_key=..., correction_method=...)` | Post-hoc correction on the embeddings. `ScFoundationModel` has no `integrate()` method; use `predict` |
+| generation | `model.predict(adata, task="generation")` is listed in the docstring | Declared by the wrapper but not covered by any tutorial here; treat as untested |
 
----
+Not every model implements every method; calling a missing one raises `AttributeError` (for example only Geneformer has `perturb_genes`).
 
-## Specifications
+## Checkpoint
 
-| Property | Value |
-|----------|-------|
-| **Model** | scFoundation |
-| **Version** | xTrimoGene |
-| **Tasks** | `embed`, `integrate` |
-| **Modality** | RNA |
-| **Species** | human |
-| **Gene ID** | custom (19,264 gene set) |
-| **Embedding dimension** | 512 |
-| **Requires GPU** | Yes |
-| **Minimum VRAM** | 16 GB |
-| **Recommended VRAM** | 32 GB |
-| **CPU fallback** | No |
-| **Adapter status** | ✅ Ready |
+`models.ckpt` from the authors' shared folder (the executed tutorial links the SharePoint release); the registry key `scfoundation` points to the Hugging Face repo `genbio-ai/scFoundation` (`omicverse.llm.model_download.download_model('scfoundation', target_dir)`).
 
----
+## Minimal example
 
-## Quick start
+This needs the checkpoint above and a GPU, so the block is not run on this page. The same calls are executed end to end, with outputs, in the tutorial [scFoundation tutorial](t_scfoundation.ipynb).
 
 ```python
 import omicverse as ov
 
-# 1. Inspect the model specification
-info = ov.fm.describe_model("scfoundation")
-
-# 2. Profile your data
-profile = ov.fm.profile_data("your_data.h5ad")
-
-# 3. Validate compatibility
-check = ov.fm.preprocess_validate("your_data.h5ad", "scfoundation", "embed")
-
-# 4. Run inference
-result = ov.fm.run(
-    task="embed",
-    model_name="scfoundation",
-    adata_path="your_data.h5ad",
-    output_path="output_scfoundation.h5ad",
-    device="auto",
+model = ov.llm.ModelFactory.create_model(
+    model_type="scfoundation",
+    model_path="llm_model/models/scfoundation/models.ckpt",
+    device="cuda",
 )
 
-# 5. Interpret the results
-metrics = ov.fm.interpret_results("output_scfoundation.h5ad", task="embed")
+adata.obsm["X_scfoundation"] = model.get_embeddings(
+    adata, pre_normalized="T", input_type="singlecell")
+
+model.fine_tune(train_adata=reference_adata, epochs=5, batch_size=32,
+                pre_normalized="T", lr=1e-3, frozen_more=True)
+res = model.predict(adata, task="integration", batch_key="batch",
+                    correction_method="mnn", pre_normalized="T")
+adata.obsm["X_scfoundation_fine"] = res["embeddings"]
+anno = model.predict(adata, task="annotation", pre_normalized="T")
 ```
 
----
+## Outputs
 
-## Input requirements
+| Call | Returns |
+|---|---|
+| `get_embeddings` | ndarray `(n_cells, 3072)` |
+| `predict(task="integration")` | dict: `embeddings` |
+| `predict_celltypes` | dict: `predictions`, `predicted_celltypes`, `probabilities`, `celltype_mapping`, `prediction_summary` |
 
-| Requirement | Details |
-|-------------|--------|
-| **Gene ID scheme** | custom (19,264 gene set) |
-| **Preprocessing** | Align genes to the model vocabulary. Follow the xTrimoGene preprocessing pipeline. |
-| **Data format** | AnnData (`.h5ad`) |
-| **Batch key** | `.obs` column used for batch integration (optional) |
+Store results yourself (tutorial: `obsm['X_scfoundation']`, `obsm['X_scfoundation_fine']`). `pre_normalized` is `'T'`, `'F'` or `'A'` (already normalised / raw / auto).
 
----
+## Helper functions
 
-## Output keys
+Convenience wrappers in `omicverse.llm.model_factory` that create the model and run a whole workflow in one call, e.g. `from omicverse.llm.model_factory import load_scfoundation`.
 
-After running `ov.fm.run()`, results are stored in the AnnData object:
+| Function | Purpose |
+|---|---|
+| `load_scfoundation(model_path, device=None, **kwargs)` | load a scFoundation model object |
+| `get_embeddings_with_scfoundation(adata, model_path, device=None, output_type='cell', **kwargs)` | load + embeddings in one call |
+| `end_to_end_scfoundation_embedding(adata, model_path, save_embeddings_path=None, device=None, output_type='cell', pool_type='all', **kwargs)` | embeddings, optionally saved to disk |
+| `fine_tune_scfoundation(train_adata, model_path, valid_adata=None, save_path=None, device=None, **kwargs)` | linear-probe fine-tuning on a reference AnnData |
+| `predict_celltypes_with_scfoundation(query_adata, finetuned_model_path, device=None, save_predictions=True, **kwargs)` | predict cell types with a fine-tuned checkpoint |
+| `end_to_end_scfoundation_annotation(reference_adata, query_adata, pretrained_model_path, save_finetuned_path=None, device=None, validation_split=0.2, **kwargs)` | fine-tune on reference, then annotate query |
+| `integrate_with_scfoundation(query_adata, model_path, batch_key='batch', correction_method='harmony', device=None, save_embeddings=True, **kwargs)` | embeddings + post-hoc batch correction |
+| `integrate_batches_with_scfoundation(query_adata, model_path, batch_key='batch', correction_method='harmony', device=None, save_embeddings=True, **kwargs)` | second entry point with the same signature as `integrate_with_scfoundation` |
+| `end_to_end_scfoundation_integration(query_adata, model_path, batch_key='batch', correction_methods=['harmony'], device=None, save_all_methods=False, **kwargs)` | integration with several correction methods |
 
-| Key | Location | Description |
-|-----|----------|-------------|
-| `X_scfoundation` | `adata.obsm` | Cell embedding vectors (512-dim) |
-| `scfoundation_pred` | `adata.obs` | Predicted cell-type labels |
+## See also
 
-```python
-import scanpy as sc
-
-adata = sc.read_h5ad("output_scfoundation.h5ad")
-embeddings = adata.obsm["X_scfoundation"]  # shape: (n_cells, 512)
-
-# Downstream analysis
-sc.pp.neighbors(adata, use_rep="X_scfoundation")
-sc.tl.umap(adata)
-sc.tl.leiden(adata, resolution=0.5)
-sc.pl.umap(adata, color=["leiden"])
-```
-
----
-
-## References
-
-- **Repository / checkpoint:** [https://github.com/biomap-research/scFoundation](https://github.com/biomap-research/scFoundation)
-- **Paper:** [https://www.nature.com/articles/s41592-024-02305-7](https://www.nature.com/articles/s41592-024-02305-7)
-- **License:** See the upstream LICENSE
-
----
-
-## Hands-on tutorial
-
-For a step-by-step walkthrough with code, see the [scFoundation tutorial notebook](t_scfoundation.ipynb)。
+- [Foundation models in ov.llm](t_fm_guide.md)
+- [scFoundation tutorial (executed)](t_scfoundation.ipynb)

@@ -6,17 +6,28 @@ orphan: true
 
 This page is a markdown overview for the AI-related tutorials currently exposed in `mkdocs.yml`.
 
-## Foundation Models (`ov.llm.SCLLMManager`)
+## Foundation Models (`ov.llm.ModelFactory`)
 
-The supported entry point for single-cell foundation models is the
-high-level `ov.llm.SCLLMManager` manager — see each tutorial for
-checkpoint setup, embedding extraction, annotation, and integration.
+Single-cell foundation models are created with
+`ov.llm.ModelFactory.create_model(model_type, model_path, device)` and used
+through the returned model object (`get_embeddings`, `predict`, `fine_tune`,
+`integrate`, ...). See the [overview](t_fm_guide.md) and the
+[overview notebook](t_fm.ipynb).
+
+Integrated models with an executed tutorial:
 
 - [scGPT](t_scgpt.ipynb)
 - [Geneformer](t_geneformer.ipynb)
 - [scFoundation](t_scfoundation.ipynb)
 - [UCE](t_uce.ipynb)
 - [CellPLM](t_cellplm.ipynb)
+
+Integrated without an executed tutorial: [scMulan](t_fm_scmulan_guide.md).
+
+The other 16 registered model types (scBERT, GeneCompass, Nicheformer, tGPT,
+CellFM, scCello, scPRINT, AIDO.Cell, PULSAR, Tabula, ATACformer, scPlantLLM,
+LangCell, Cell2Sentence, GenePT, ChatCell) are placeholders that are **not
+integrated yet**; each guide page says what exists and what is missing.
 
 ## OmicClaw and Gateway
 

@@ -1,6 +1,6 @@
-# Domain-Specific Models
+# Not Yet Integrated: Domain-Specific and Language Models
 
-Guides for domain-specific and language-based single-cell foundation models.
+Registered placeholders only (no runnable implementation in `ov.llm`). Each page lists what exists and what is missing.
 
 ```{toctree}
 :maxdepth: 1

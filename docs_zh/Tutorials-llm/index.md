@@ -6,33 +6,25 @@ orphan: true
 
 本页面是`mkdocs.yml`中当前公开的AI相关教程的markdown概览。
 
-## 基础模型
+## 基础模型（`ov.llm.ModelFactory`）
 
-- [ov.fm API概览](t_fm_guide.md)
-- [ov.fm快速开始](t_fm.ipynb)
-- 指南和笔记本:
-  - [scGPT](t_fm_scgpt_guide.md)
-  - [Geneformer](t_fm_geneformer_guide.md)
-  - [UCE](t_fm_uce_guide.md)
-  - [scFoundation](t_fm_scfoundation_guide.md)
-  - [CellPLM](t_fm_cellplm_guide.md)
-  - [scBERT](t_fm_scbert_guide.md)
-  - [GeneCompass](t_fm_genecompass_guide.md)
-  - [Nicheformer](t_fm_nicheformer_guide.md)
-  - [scMulan](t_fm_scmulan_guide.md)
-  - [tGPT](t_fm_tgpt_guide.md)
-  - [CellFM](t_fm_cellfm_guide.md)
-  - [scCello](t_fm_sccello_guide.md)
-  - [scPRINT](t_fm_scprint_guide.md)
-  - [AIDO.Cell](t_fm_aidocell_guide.md)
-  - [PULSAR](t_fm_pulsar_guide.md)
-  - [Tabula](t_fm_tabula_guide.md)
-  - [ATACformer](t_fm_atacformer_guide.md)
-  - [scPlantLLM](t_fm_scplantllm_guide.md)
-  - [LangCell](t_fm_langcell_guide.md)
-  - [Cell2Sentence](t_fm_cell2sentence_guide.md)
-  - [GenePT](t_fm_genept_guide.md)
-  - [ChatCell](t_fm_chatcell_guide.md)
+单细胞基础模型通过 `ov.llm.ModelFactory.create_model(model_type, model_path, device)` 创建，
+再使用返回的模型对象（`get_embeddings`、`predict`、`fine_tune`、`integrate` 等）。
+参见[总览](t_fm_guide.md)与[概览 notebook](t_fm.ipynb)。
+
+已集成且有已执行教程的模型：
+
+- [scGPT](t_scgpt.ipynb)
+- [Geneformer](t_geneformer.ipynb)
+- [scFoundation](t_scfoundation.ipynb)
+- [UCE](t_uce.ipynb)
+- [CellPLM](t_cellplm.ipynb)
+
+已集成但暂无已执行教程：[scMulan](t_fm_scmulan_guide.md)。
+
+其余 16 个已注册 model type（scBERT、GeneCompass、Nicheformer、tGPT、CellFM、scCello、
+scPRINT、AIDO.Cell、PULSAR、Tabula、ATACformer、scPlantLLM、LangCell、Cell2Sentence、
+GenePT、ChatCell）仅为占位，**尚未集成**；各指南页说明已有内容与缺失内容。
 
 ## OmicClaw和Gateway
 

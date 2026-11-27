@@ -1,110 +1,72 @@
 # UCE
 
-✅ **Status:** Ready | **Version:** 4-layer
+**Status in `ov.llm`: integrated** (model type `"uce"`, class `UCEModel`).
 
----
+## What it is
 
-## Overview
+**UCE (Universal Cell Embeddings)** is a self-supervised transformer trained on cell-atlas data from eight species. Genes are tokenised through ESM2 protein embeddings and genomic position, so no gene vocabulary alignment is needed across species. `UCEModel` gives zero-shot embeddings, batch integration on the embeddings, and annotation after fine-tuning with a classification head (frozen or unfrozen backbone).
 
-Broadest species support (7 species), 1280-dim embeddings, universal cell embeddings via protein structure
+Reference: Rosen, Y. et al. Universal Cell Embeddings: A Foundation Model for Cell Biology. *bioRxiv* (2023). Code: <https://github.com/snap-stanford/UCE>
 
-!!! tip "When to choose UCE"
+## Supported tasks in `ov.llm`
 
-    Best for non-human/non-mouse species (zebrafish, frog, pig, macaque, lemur) or cross-species comparison
+| Task | Call | Notes |
+|---|---|---|
+| embedding | `model.get_embeddings(adata, filter_cells=False, filter_genes=False)` | `(n_cells, 1280)` |
+| integration | `model.integrate(adata, batch_key=..., correction_method="mnn")` | `correction_method` in `harmony`, `mnn`, `center_scale`, `none` |
+| annotation | `model.fine_tune(train_adata=..., freeze_backbone=True/False)` → `model.predict(adata, task="annotation")` / `model.predict_celltype(adata)` | `predict(task="annotation")` raises `ValueError` before fine-tuning (only `embedding` is available) |
 
----
+Not every model implements every method; calling a missing one raises `AttributeError` (for example only Geneformer has `perturb_genes`).
 
-## Specifications
+## Checkpoint
 
-| Property | Value |
-|----------|-------|
-| **Model** | UCE |
-| **Version** | 4-layer |
-| **Tasks** | `embed`, `integrate` |
-| **Modalities** | RNA |
-| **Species** | human, mouse, zebrafish, mouse_lemur, macaque, frog, pig |
-| **Gene ID** | symbol |
-| **Embedding dim** | 1280 |
-| **Requires GPU** | Yes |
-| **Min VRAM** | 16 GB |
-| **Recommended VRAM** | 16 GB |
-| **CPU fallback** | No |
-| **Adapter status** | ✅ Ready |
+figshare bundle from the UCE authors: `4layer_model.torch`, `species_chrom.csv`, `species_offsets.pkl`, the token embedding file (`all_tokens.torch` in the tutorial) and `protein_embeddings.tar.gz` (extract it). The registry key `uce` downloads the same bundle through `omicverse.llm.model_download.download_model('uce', target_dir)`. The five paths must be passed to `create_model` (`model_path`, `token_file`, `protein_embeddings_dir`, `spec_chrom_csv_path`, `offset_pkl_path`).
 
----
+## Minimal example
 
-## Quick start
+This needs the checkpoint above and a GPU, so the block is not run on this page. The same calls are executed end to end, with outputs, in the tutorial [UCE tutorial](t_uce.ipynb).
 
 ```python
 import omicverse as ov
 
-# 1. Inspect the model spec
-info = ov.fm.describe_model("uce")
-
-# 2. Profile your data
-profile = ov.fm.profile_data("your_data.h5ad")
-
-# 3. Validate compatibility
-check = ov.fm.preprocess_validate("your_data.h5ad", "uce", "embed")
-
-# 4. Run inference
-result = ov.fm.run(
-    task="embed",
-    model_name="uce",
-    adata_path="your_data.h5ad",
-    output_path="output_uce.h5ad",
-    device="auto",
+model = ov.llm.ModelFactory.create_model(
+    model_type="uce",
+    model_path="llm_model/models/UCE/4layer_model.torch",
+    token_file="llm_model/models/UCE/all_tokens.torch",
+    protein_embeddings_dir="llm_model/models/UCE/protein_embeddings/",
+    spec_chrom_csv_path="llm_model/models/UCE/species_chrom.csv",
+    offset_pkl_path="llm_model/models/UCE/species_offsets.pkl",
+    species="human",
+    device="cuda",
 )
 
-# 5. Interpret the results
-metrics = ov.fm.interpret_results("output_uce.h5ad", task="embed")
+adata.obsm["X_uce"] = model.get_embeddings(adata, filter_cells=False, filter_genes=False)
+
+res = model.integrate(adata, batch_key="batch", correction_method="mnn")
+adata.obsm["X_uce_mnn"] = res["embeddings"]
+
+model.fine_tune(train_adata=reference_adata, epochs=10, batch_size=32, lr=1e-4,
+                freeze_backbone=True)
+pred = model.predict(adata, task="annotation")
+adata.obs["predicted_celltype"] = pred["predictions"]
 ```
 
----
+## Outputs
 
-## Input requirements
+| Call | Returns |
+|---|---|
+| `get_embeddings` | ndarray `(n_cells, 1280)` |
+| `predict(task="embedding")` | dict: `embeddings`, `task`, `model_name` |
+| `integrate` | dict: `embeddings` (corrected) |
+| `predict(task="annotation")` + `fine_tune` | dict: `predictions`, `task`, `model_name`, `fine_tuned` |
 
-| Requirement | Details |
-|-------------|--------|
-| **Gene ID scheme** | symbol |
-| **Preprocessing** | Standard log-normalization. The model handles tokenization internally. |
-| **Data format** | AnnData (`.h5ad`) |
-| **Batch key** | `.obs` column used for batch integration (optional) |
+Store results yourself (tutorial: `obsm['X_uce']`, `obsm['X_uce_mnn']`, `obsm['X_uce_fine']`).
 
----
+## Helper functions
 
-## Output keys
+There are no dedicated helper functions for UCE; use `ModelFactory.create_model` and the model methods directly.
 
-After running `ov.fm.run()`, results are stored in the AnnData object:
+## See also
 
-| Key | Location | Description |
-|-----|----------|-------------|
-| `X_uce` | `adata.obsm` | Cell embedding vectors (1280-dim) |
-
-```python
-import scanpy as sc
-
-adata = sc.read_h5ad("output_uce.h5ad")
-embeddings = adata.obsm["X_uce"]  # shape: (n_cells, 1280)
-
-# Downstream analysis
-sc.pp.neighbors(adata, use_rep="X_uce")
-sc.tl.umap(adata)
-sc.tl.leiden(adata, resolution=0.5)
-sc.pl.umap(adata, color=["leiden"])
-```
-
----
-
-## References
-
-- **Repository / checkpoints:** [https://github.com/snap-stanford/UCE](https://github.com/snap-stanford/UCE)
-- **Paper:** [https://www.nature.com/articles/s41592-024-02201-0](https://www.nature.com/articles/s41592-024-02201-0)
-- **Documentation:** [https://github.com/snap-stanford/UCE](https://github.com/snap-stanford/UCE)
-- **License:** MIT License
-
----
-
-## Hands-on tutorial
-
-For a step-by-step walkthrough with code, see the [UCE tutorial notebook](t_uce.ipynb).
+- [Foundation models in ov.llm](t_fm_guide.md)
+- [UCE tutorial (executed)](t_uce.ipynb)

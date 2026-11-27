@@ -1,108 +1,41 @@
 # LangCell
 
-⚠️ **状态：** 部分支持 | **版本：** v1.0
+**`ov.llm` 中的状态：尚未集成**（占位类 `LangCellModel`，model type `"langcell"`）。
 
----
+## 模型简介
 
-## 概述
+双塔（文本 + 细胞）模型，对齐自然语言描述与细胞嵌入（上游模型概述）。
 
-双塔架构（文本 + 细胞），将自然语言描述与细胞嵌入进行对齐
+## omicverse 中已有的内容
 
-!!! tip "何时选择 LangCell"
+- `ov.llm.ModelFactory.available_models()` 中包含 `"langcell"`，`ModelFactory.create_model("langcell")` 返回占位对象 `LangCellModel`（`omicverse.llm.external_model_stubs`）。
+- `load_model(path)` 只检查权重路径是否存在并把占位对象标记为已加载，不会加载任何权重。
+- `predict`、`fine_tune`、`get_embeddings`、`save_model` 一律抛出 `ModelExecutionBlockedError`，其中带有原因、上游地址与所需环境变量。
 
-    适用于需要文本引导的细胞检索、自然语言细胞查询或文本-细胞对齐的场景
+## 缺少的部分
 
----
+LangCell 已注册，但其文本-细胞双塔运行时尚未集成到 omicverse.llm。
 
-## 规格参数
+## 目前可以运行的内容
 
-| 属性 | 值 |
-|----------|-------|
-| **模型** | LangCell |
-| **版本** | v1.0 |
-| **任务** | `embed`, `integrate` |
-| **模态** | RNA |
-| **物种** | human |
-| **基因 ID** | symbol |
-| **嵌入维度** | 512 |
-| **需要 GPU** | 是 |
-| **最低显存** | 16 GB |
-| **推荐显存** | 32 GB |
-| **CPU 回退** | 否 |
-| **适配器状态** | ⚠️ 部分支持 |
-
----
-
-## 快速开始
+只有下面的占位行为可以运行；`ov.llm` 中此模型没有嵌入、注释或整合功能。
 
 ```python
 import omicverse as ov
 
-# 1. 查看模型规格
-info = ov.fm.describe_model("langcell")
-
-# 2. 分析您的数据
-profile = ov.fm.profile_data("your_data.h5ad")
-
-# 3. 验证兼容性
-check = ov.fm.preprocess_validate("your_data.h5ad", "langcell", "embed")
-
-# 4. 运行推理
-result = ov.fm.run(
-    task="embed",
-    model_name="langcell",
-    adata_path="your_data.h5ad",
-    output_path="output_langcell.h5ad",
-    device="auto",
-)
-
-# 5. 解读结果
-metrics = ov.fm.interpret_results("output_langcell.h5ad", task="embed")
+model = ov.llm.ModelFactory.create_model("langcell")
+try:
+    model.get_embeddings(adata)
+except ov.llm.ModelExecutionBlockedError as err:
+    print(err)                 # langcell cannot run task 'embed': ...
+    print(err.checkpoint_url)  # https://github.com/langcell/LangCell
 ```
 
----
+占位对象打印的消息：`langcell cannot run task 'embed': LangCell is registered but its text-cell dual-tower runtime is not integrated into omicverse.llm yet.`
 
-## 输入要求
+在集成之前如需使用该模型，请直接运行上游实现。继承 `SCLLMBase` 的自定义封装可通过 `ov.llm.ModelFactory.register_model("name", MyModel)` 接入。
 
-| 要求 | 详情 |
-|-------------|--------|
-| **基因 ID 方案** | symbol |
-| **预处理** | 标准预处理。文本查询可以是细胞类型或状态的自然语言描述。 |
-| **数据格式** | AnnData (`.h5ad`) |
-| **批次键** | 用于批次整合的 `.obs` 列（可选） |
+## 参考
 
----
-
-## 输出键
-
-运行 `ov.fm.run()` 后，结果存储在 AnnData 对象中：
-
-| 键 | 位置 | 描述 |
-|-----|----------|-------------|
-| `X_langcell` | `adata.obsm` | 细胞嵌入向量（512 维） |
-
-```python
-import scanpy as sc
-
-adata = sc.read_h5ad("output_langcell.h5ad")
-embeddings = adata.obsm["X_langcell"]  # shape: (n_cells, 512)
-
-# 下游分析
-sc.pp.neighbors(adata, use_rep="X_langcell")
-sc.tl.umap(adata)
-sc.tl.leiden(adata, resolution=0.5)
-sc.pl.umap(adata, color=["leiden"])
-```
-
----
-
-## 参考资源
-
-- **仓库 / 检查点：** [https://github.com/langcell/LangCell](https://github.com/langcell/LangCell)
-- **许可证：** 请查阅上游 LICENSE
-
----
-
-## 动手教程
-
-如需包含代码的逐步演练，请参阅 [LangCell 教程笔记本](t_fm_langcell.ipynb)。
+- 上游仓库：<https://github.com/langcell/LangCell>
+- [ov.llm 基础模型总览](t_fm_guide.md)

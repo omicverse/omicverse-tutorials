@@ -1,108 +1,77 @@
 # CellPLM
 
-✅ **Status:** Ready | **Version:** v1.0
+**Status in `ov.llm`: integrated** (model type `"cellplm"`, class `CellPLMModel`).
 
----
+## What it is
 
-## Overview
+**CellPLM** is a single-cell pre-trained language model that treats cells (not genes) as tokens and encodes cell-cell relations. `CellPLMModel` provides embeddings, annotation after fine-tuning, imputation (pipeline), and batch integration through embeddings.
 
-Cell-centric (rather than gene-centric) architecture with the highest batch throughput (batch_size=128) and fast inference
+Reference: Wen, H. et al. CellPLM: pre-training of cell language model beyond single cells. *bioRxiv* (2023); ICLR 2024. Code: <https://github.com/OmicsML/CellPLM>
 
-!!! tip "When to choose CellPLM"
+## Supported tasks in `ov.llm`
 
-    Use it when you need fast inference, high throughput, million-cell-scale processing, or cell-level (rather than gene-level) modeling
+| Task | Call | Notes |
+|---|---|---|
+| embedding | `model.get_embeddings(adata)` | 512-dimensional in the executed tutorial |
+| annotation | `model.fine_tune(train_adata=...)` → `model.predict_celltypes(adata)` | `fine_tune` `task` in `annotation`, `imputation` |
+| integration | `model.integrate(adata, batch_key=..., correction_method=...)`; `model.train_integration(...)` | Embedding-based |
+| imputation | `model.predict(adata, task="imputation")` | Listed in the wrapper docstring; not covered by a tutorial here |
 
----
+Not every model implements every method; calling a missing one raises `AttributeError` (for example only Geneformer has `perturb_genes`).
 
-## Specifications
+## Checkpoint
 
-| Property | Value |
-|----------|-------|
-| **Model** | CellPLM |
-| **Version** | v1.0 |
-| **Tasks** | `embed`, `integrate` |
-| **Modality** | RNA |
-| **Species** | human |
-| **Gene ID** | symbol |
-| **Embedding dimension** | 512 |
-| **Requires GPU** | Yes |
-| **Minimum VRAM** | 8 GB |
-| **Recommended VRAM** | 16 GB |
-| **CPU fallback** | Yes |
-| **Adapter status** | ✅ Ready |
+Dropbox folder of the authors (linked from the executed tutorial): <https://www.dropbox.com/scl/fo/i5rmxgtqzg7iykt2e9uqm/h/ckpt>. Default `pretrain_version` is `20231027_85M`; `model_path` is the folder holding the checkpoint and its config.
 
----
+## Minimal example
 
-## Quick start
+This needs the checkpoint above and a GPU, so the block is not run on this page. The same calls are executed end to end, with outputs, in the tutorial [CellPLM tutorial](t_cellplm.ipynb).
 
 ```python
 import omicverse as ov
 
-# 1. Inspect the model specification
-info = ov.fm.describe_model("cellplm")
-
-# 2. Profile your data
-profile = ov.fm.profile_data("your_data.h5ad")
-
-# 3. Validate compatibility
-check = ov.fm.preprocess_validate("your_data.h5ad", "cellplm", "embed")
-
-# 4. Run inference
-result = ov.fm.run(
-    task="embed",
-    model_name="cellplm",
-    adata_path="your_data.h5ad",
-    output_path="output_cellplm.h5ad",
-    device="auto",
+model = ov.llm.ModelFactory.create_model(
+    model_type="cellplm",
+    model_path="llm_model/models/cellplm",
+    pretrain_version="20231027_85M",
 )
 
-# 5. Interpret results
-metrics = ov.fm.interpret_results("output_cellplm.h5ad", task="embed")
+adata.obsm["X_cellplm"] = model.get_embeddings(adata)
+
+model.fine_tune(train_adata=reference_adata, epochs=1500, batch_size=32, lr=1e-4)
+res = model.integrate(adata, batch_key="batch", correction_method="mnn")
+adata.obsm["X_cellplm_fine"] = res["embeddings"]
+
+pred = model.predict_celltypes(adata)
+adata.obs["predicted_celltype"] = pred["predicted_celltypes"]
 ```
 
----
+## Outputs
 
-## Input requirements
+| Call | Returns |
+|---|---|
+| `get_embeddings` | ndarray `(n_cells, 512)` |
+| `integrate` | dict: `embeddings` |
+| `predict_celltypes` | dict: `predicted_celltypes`, `predictions` (class ids), statistics |
 
-| Requirement | Details |
-|-------------|--------|
-| **Gene ID scheme** | symbol |
-| **Preprocessing** | Standard preprocessing. The model handles tokenization internally. |
-| **Data format** | AnnData (`.h5ad`) |
-| **Batch key** | `.obs` column used for batch integration (optional) |
+Store results yourself (tutorial: `obsm['X_cellplm_fine']`, `obs['predicted_celltype']`).
 
----
+## Helper functions
 
-## Output keys
+Convenience wrappers in `omicverse.llm.model_factory` that create the model and run a whole workflow in one call, e.g. `from omicverse.llm.model_factory import load_cellplm`.
 
-After running `ov.fm.run()`, results are stored in the AnnData object:
+| Function | Purpose |
+|---|---|
+| `load_cellplm(model_path, pretrain_version='20231027_85M', device=None, **kwargs)` | load a CellPLM model object |
+| `get_embeddings_with_cellplm(adata, model_path, pretrain_version='20231027_85M', device=None, **kwargs)` | load + embeddings in one call |
+| `end_to_end_cellplm_embedding(adata, model_path, pretrain_version='20231027_85M', save_embeddings_path=None, device=None, **kwargs)` | embeddings, optionally saved to disk |
+| `fine_tune_cellplm(train_adata, model_path, pretrain_version='20231027_85M', valid_adata=None, save_path=None, device=None, task='annotation', **kwargs)` | fine-tune on a reference AnnData |
+| `predict_celltypes_with_cellplm(query_adata, finetuned_model_path, pretrain_version='20231027_85M', device=None, save_predictions=True, **kwargs)` | predict cell types with a fine-tuned checkpoint |
+| `end_to_end_cellplm_annotation(reference_adata, query_adata, model_path, pretrain_version='20231027_85M', save_finetuned_path=None, device=None, validation_split=0.2, **kwargs)` | fine-tune on reference, then annotate query |
+| `integrate_with_cellplm(query_adata, model_path, pretrain_version='20231027_85M', batch_key='batch', correction_method='harmony', device=None, save_embeddings=True, **kwargs)` | embeddings + post-hoc batch correction |
+| `end_to_end_cellplm_integration(query_adata, model_path, pretrain_version='20231027_85M', batch_key='batch', correction_methods=['harmony'], device=None, save_all_methods=False, **kwargs)` | integration with several correction methods |
 
-| Key | Location | Description |
-|-----|----------|-------------|
-| `X_cellplm` | `adata.obsm` | Cell embedding vectors (512-dim) |
+## See also
 
-```python
-import scanpy as sc
-
-adata = sc.read_h5ad("output_cellplm.h5ad")
-embeddings = adata.obsm["X_cellplm"]  # shape: (n_cells, 512)
-
-# Downstream analysis
-sc.pp.neighbors(adata, use_rep="X_cellplm")
-sc.tl.umap(adata)
-sc.tl.leiden(adata, resolution=0.5)
-sc.pl.umap(adata, color=["leiden"])
-```
-
----
-
-## References
-
-- **Repository / checkpoint:** [https://github.com/OmicsML/CellPLM](https://github.com/OmicsML/CellPLM)
-- **License:** See the upstream LICENSE
-
----
-
-## Hands-on tutorial
-
-For a step-by-step walkthrough with code, see the [CellPLM tutorial notebook](t_cellplm.ipynb).
+- [Foundation models in ov.llm](t_fm_guide.md)
+- [CellPLM tutorial (executed)](t_cellplm.ipynb)

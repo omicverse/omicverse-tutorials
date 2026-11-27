@@ -1,6 +1,6 @@
-# Skill-Ready Models
+# Integrated Models
 
-Full guide and tutorial for models with skill-ready support in `ov.fm`.
+Models with a working `ov.llm` implementation: a guide page for each, plus an executed tutorial for scGPT, Geneformer, UCE, scFoundation and CellPLM. scMulan is integrated for embedding and annotation but has no executed tutorial yet.
 
 ```{toctree}
 :maxdepth: 1
@@ -15,4 +15,5 @@ Full guide and tutorial for models with skill-ready support in `ov.fm`.
 ../Tutorials-llm/t_scfoundation
 ../Tutorials-llm/t_fm_cellplm_guide
 ../Tutorials-llm/t_cellplm
+../Tutorials-llm/t_fm_scmulan_guide
 ```

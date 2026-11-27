@@ -1,110 +1,72 @@
 # UCE
 
-✅ **状态：** 就绪 | **版本：** 4-layer
+**`ov.llm` 中的状态：已集成**（model type `"uce"`，类 `UCEModel`）。
 
----
+## 简介
 
-## 概述
+**UCE（Universal Cell Embeddings）** 是在八个物种的细胞图谱数据上自监督训练的 Transformer。基因通过 ESM2 蛋白嵌入与基因组位置做 token 化，跨物种无需对齐基因词表。`UCEModel` 提供零样本嵌入、基于嵌入的批次整合，以及加分类头微调（冻结/不冻结骨干）后的注释。
 
-最广泛的物种支持（7 种物种），1280 维嵌入，通过蛋白质结构实现通用细胞嵌入
+文献：Rosen, Y. 等. Universal Cell Embeddings: A Foundation Model for Cell Biology. *bioRxiv* (2023)。代码：<https://github.com/snap-stanford/UCE>
 
-!!! tip "何时选择 UCE"
+## `ov.llm` 支持的任务
 
-    适用于非人类/非小鼠物种（斑马鱼、蛙、猪、猕猴、狐猴），或需要跨物种比较的场景
+| 任务 | 调用 | 说明 |
+|---|---|---|
+| embedding | `model.get_embeddings(adata, filter_cells=False, filter_genes=False)` | `(n_cells, 1280)` |
+| integration | `model.integrate(adata, batch_key=..., correction_method="mnn")` | `correction_method` 可选 `harmony`、`mnn`、`center_scale`、`none` |
+| annotation | `model.fine_tune(train_adata=..., freeze_backbone=True/False)` → `model.predict(adata, task="annotation")` / `model.predict_celltype(adata)` | 微调前 `predict(task="annotation")` 会抛出 `ValueError`（仅 `embedding` 可用） |
 
----
+并非每个模型都实现所有方法；调用不存在的方法会抛出 `AttributeError`（例如只有 Geneformer 提供 `perturb_genes`）。
 
-## 规格参数
+## 权重获取
 
-| 属性 | 值 |
-|----------|-------|
-| **模型** | UCE |
-| **版本** | 4-layer |
-| **任务** | `embed`, `integrate` |
-| **模态** | RNA |
-| **物种** | human, mouse, zebrafish, mouse_lemur, macaque, frog, pig |
-| **基因 ID** | symbol |
-| **嵌入维度** | 1280 |
-| **需要 GPU** | 是 |
-| **最低显存** | 16 GB |
-| **推荐显存** | 16 GB |
-| **CPU 回退** | 否 |
-| **适配器状态** | ✅ 就绪 |
+UCE 作者的 figshare 文件包：`4layer_model.torch`、`species_chrom.csv`、`species_offsets.pkl`、token 嵌入文件（教程中为 `all_tokens.torch`）和需解压的 `protein_embeddings.tar.gz`。注册表键 `uce` 可通过 `omicverse.llm.model_download.download_model('uce', target_dir)` 下载同一文件包。这五个路径需传给 `create_model`（`model_path`、`token_file`、`protein_embeddings_dir`、`spec_chrom_csv_path`、`offset_pkl_path`）。
 
----
+## 最小示例
 
-## 快速开始
+该示例需要上述权重和 GPU，本页不执行。相同的调用已在教程 [UCE 教程](t_uce.ipynb) 中完整执行并保留输出。
 
 ```python
 import omicverse as ov
 
-# 1. 查看模型规格
-info = ov.fm.describe_model("uce")
-
-# 2. 分析您的数据
-profile = ov.fm.profile_data("your_data.h5ad")
-
-# 3. 验证兼容性
-check = ov.fm.preprocess_validate("your_data.h5ad", "uce", "embed")
-
-# 4. 运行推理
-result = ov.fm.run(
-    task="embed",
-    model_name="uce",
-    adata_path="your_data.h5ad",
-    output_path="output_uce.h5ad",
-    device="auto",
+model = ov.llm.ModelFactory.create_model(
+    model_type="uce",
+    model_path="llm_model/models/UCE/4layer_model.torch",
+    token_file="llm_model/models/UCE/all_tokens.torch",
+    protein_embeddings_dir="llm_model/models/UCE/protein_embeddings/",
+    spec_chrom_csv_path="llm_model/models/UCE/species_chrom.csv",
+    offset_pkl_path="llm_model/models/UCE/species_offsets.pkl",
+    species="human",
+    device="cuda",
 )
 
-# 5. 解读结果
-metrics = ov.fm.interpret_results("output_uce.h5ad", task="embed")
+adata.obsm["X_uce"] = model.get_embeddings(adata, filter_cells=False, filter_genes=False)
+
+res = model.integrate(adata, batch_key="batch", correction_method="mnn")
+adata.obsm["X_uce_mnn"] = res["embeddings"]
+
+model.fine_tune(train_adata=reference_adata, epochs=10, batch_size=32, lr=1e-4,
+                freeze_backbone=True)
+pred = model.predict(adata, task="annotation")
+adata.obs["predicted_celltype"] = pred["predictions"]
 ```
 
----
+## 输出
 
-## 输入要求
+| 调用 | 返回 |
+|---|---|
+| `get_embeddings` | ndarray `(n_cells, 1280)` |
+| `predict(task="embedding")` | dict：`embeddings`、`task`、`model_name` |
+| `integrate` | dict：`embeddings`（校正后） |
+| `predict(task="annotation")` + `fine_tune` | dict：`predictions`、`task`、`model_name`、`fine_tuned` |
 
-| 要求 | 详情 |
-|-------------|--------|
-| **基因 ID 方案** | symbol |
-| **预处理** | 标准对数归一化。模型内部处理 tokenization。 |
-| **数据格式** | AnnData (`.h5ad`) |
-| **批次键** | 用于批次整合的 `.obs` 列（可选） |
+需自行保存结果（教程：`obsm['X_uce']`、`obsm['X_uce_mnn']`、`obsm['X_uce_fine']`）。
 
----
+## 辅助函数
 
-## 输出键
+UCE 没有专用辅助函数，请直接使用 `ModelFactory.create_model` 与模型方法。
 
-运行 `ov.fm.run()` 后，结果存储在 AnnData 对象中：
+## 相关页面
 
-| 键 | 位置 | 描述 |
-|-----|----------|-------------|
-| `X_uce` | `adata.obsm` | 细胞嵌入向量（1280 维） |
-
-```python
-import scanpy as sc
-
-adata = sc.read_h5ad("output_uce.h5ad")
-embeddings = adata.obsm["X_uce"]  # shape: (n_cells, 1280)
-
-# 下游分析
-sc.pp.neighbors(adata, use_rep="X_uce")
-sc.tl.umap(adata)
-sc.tl.leiden(adata, resolution=0.5)
-sc.pl.umap(adata, color=["leiden"])
-```
-
----
-
-## 参考资源
-
-- **仓库 / 检查点：** [https://github.com/snap-stanford/UCE](https://github.com/snap-stanford/UCE)
-- **论文：** [https://www.nature.com/articles/s41592-024-02201-0](https://www.nature.com/articles/s41592-024-02201-0)
-- **文档：** [https://github.com/snap-stanford/UCE](https://github.com/snap-stanford/UCE)
-- **许可证：** MIT License
-
----
-
-## 动手教程
-
-如需包含代码的逐步演练，请参阅 [UCE 教程笔记本](t_uce.ipynb)。
+- [ov.llm 基础模型总览](t_fm_guide.md)
+- [UCE 教程（已执行）](t_uce.ipynb)

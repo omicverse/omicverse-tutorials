@@ -1,107 +1,43 @@
 # GenePT
 
-⚠️ **Status:** Partial support | **Version:** v1.0
+**Status in `ov.llm`: not integrated yet** (placeholder `GenePTModel`, model type `"genept"`).
 
----
+## What the model is
 
-## Overview
+GPT-3.5 based gene embeddings obtained through an API (per gene, not per cell) (summary of the upstream model).
 
-API-based GPT-3.5 gene embeddings (1536-dim); no local GPU required; operates per gene (not per cell)
+## What exists in omicverse
 
-!!! tip "When to choose GenePT"
+- `"genept"` is listed by `ov.llm.ModelFactory.available_models()` and `ModelFactory.create_model("genept")` returns a `GenePTModel` placeholder (`omicverse.llm.external_model_stubs`).
+- No checkpoint is required to construct or `load_model(None)` the placeholder.
+- `predict`, `fine_tune`, `get_embeddings` and `save_model` always raise `ModelExecutionBlockedError`, carrying the reason, the upstream URL and the required environment variables.
 
-    Use it when you need gene-level (rather than cell-level) embeddings, have no local GPU, or want API-based OpenAI embeddings
+## What is missing
 
----
+GenePT requires external API-backed gene embeddings and is not runnable through the local omicverse.llm stack yet.
 
-## Specifications
+Required environment variables recorded by the placeholder: `OPENAI_API_KEY`.
 
-| Property | Value |
-|----------|-------|
-| **Model** | GenePT |
-| **Version** | v1.0 |
-| **Tasks** | `embed` |
-| **Modality** | RNA |
-| **Species** | human |
-| **Gene ID** | symbol |
-| **Embedding dimension** | 1536 |
-| **Requires GPU** | No |
-| **Minimum VRAM** | 0 GB |
-| **Recommended VRAM** | 0 GB |
-| **CPU fallback** | Yes |
-| **Adapter status** | ⚠️ Partial support |
+## What you can run today
 
----
-
-## Quick start
+Only the placeholder behaviour below runs; there is no embedding, annotation or integration for this model in `ov.llm`.
 
 ```python
 import omicverse as ov
 
-# 1. Inspect the model specification
-info = ov.fm.describe_model("genept")
-
-# 2. Profile your data
-profile = ov.fm.profile_data("your_data.h5ad")
-
-# 3. Validate compatibility
-check = ov.fm.preprocess_validate("your_data.h5ad", "genept", "embed")
-
-# 4. Run inference
-result = ov.fm.run(
-    task="embed",
-    model_name="genept",
-    adata_path="your_data.h5ad",
-    output_path="output_genept.h5ad",
-    device="auto",
-)
-
-# 5. Interpret the results
-metrics = ov.fm.interpret_results("output_genept.h5ad", task="embed")
+model = ov.llm.ModelFactory.create_model("genept")
+try:
+    model.get_embeddings(adata)
+except ov.llm.ModelExecutionBlockedError as err:
+    print(err)                 # genept cannot run task 'embed': ...
+    print(err.checkpoint_url)  # https://github.com/yiqunchen/GenePT
 ```
 
----
+Message printed by the placeholder: `genept cannot run task 'embed': GenePT requires external API-backed gene embeddings and is not runnable through the local omicverse.llm stack yet.`
 
-## Input requirements
-
-| Requirement | Details |
-|-------------|--------|
-| **Gene ID scheme** | symbol |
-| **Preprocessing** | No local preprocessing required. An OpenAI API key is needed to generate embeddings. |
-| **Data format** | AnnData (`.h5ad`) |
-
----
-
-## Output keys
-
-After running `ov.fm.run()`, results are stored in the AnnData object:
-
-| Key | Location | Description |
-|-----|----------|-------------|
-| `X_genept` | `adata.obsm` | Cell embedding vectors (1536-dim) |
-
-```python
-import scanpy as sc
-
-adata = sc.read_h5ad("output_genept.h5ad")
-embeddings = adata.obsm["X_genept"]  # shape: (n_cells, 1536)
-
-# Downstream analysis
-sc.pp.neighbors(adata, use_rep="X_genept")
-sc.tl.umap(adata)
-sc.tl.leiden(adata, resolution=0.5)
-sc.pl.umap(adata, color=["leiden"])
-```
-
----
+To use the model before it is integrated, run the upstream implementation directly. A custom wrapper that subclasses `SCLLMBase` can be plugged in with `ov.llm.ModelFactory.register_model("name", MyModel)`.
 
 ## References
 
-- **Repository / checkpoint:** [https://github.com/yiqunchen/GenePT](https://github.com/yiqunchen/GenePT)
-- **License:** See the upstream LICENSE
-
----
-
-## Hands-on tutorial
-
-For a step-by-step walkthrough with code, see the [GenePT tutorial notebook](t_fm_genept.ipynb)。
+- Upstream repository: <https://github.com/yiqunchen/GenePT>
+- [Foundation models in ov.llm](t_fm_guide.md)

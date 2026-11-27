@@ -1911,3 +1911,15 @@ umap-learn / scanpy use.
   omicverse (#1051–#1065).
 - OpenClaw, MCP server and J.A.R.V.I.S. documentation moved to
   [OmicClaw](https://github.com/omicverse/omicclaw) (#1057).
+
+### Documentation note: foundation-model tutorials on the `ov.llm` model objects
+
+Entries above that mention `SCLLMManager` or the `ov.fm` namespace describe what
+was current at the time. Both are now removed from omicverse: foundation models
+are created with `ov.llm.ModelFactory.create_model(model_type, model_path,
+device)` and used through the returned model object. The scGPT, scFoundation,
+Geneformer, CellPLM and UCE tutorials, the 22 `t_fm_<model>_guide` pages and the
+`t_fm` overview notebook were rewritten accordingly; 16 of the 22 model types
+(scBERT, GeneCompass, Nicheformer, tGPT, CellFM, scCello, scPRINT, AIDO.Cell,
+PULSAR, Tabula, ATACformer, scPlantLLM, LangCell, Cell2Sentence, GenePT, ChatCell)
+are documented as not integrated yet.

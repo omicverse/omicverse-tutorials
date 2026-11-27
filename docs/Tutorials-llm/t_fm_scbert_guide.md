@@ -1,110 +1,42 @@
 # scBERT
 
-⚠️ **Status:** Partial support | **Version:** v1.0
+**Status in `ov.llm`: not integrated yet** (placeholder `ScBERTModel`, model type `"scbert"`).
 
----
+## What the model is
 
-## Overview
+BERT-style masked-gene pre-training with compact 200-dim embeddings (summary of the upstream model).
 
-Compact 200-dim embeddings, BERT-style masked-gene pretraining, lightweight model
+## What exists in omicverse
 
-!!! tip "When to choose scBERT"
+- `"scbert"` is listed by `ov.llm.ModelFactory.available_models()` and `ModelFactory.create_model("scbert")` returns a `ScBERTModel` placeholder (`omicverse.llm.external_model_stubs`).
+- `load_model(path)` only checks that the checkpoint path exists and marks the placeholder as loaded; it loads no weights.
+- `predict`, `fine_tune`, `get_embeddings` and `save_model` always raise `ModelExecutionBlockedError`, carrying the reason, the upstream URL and the required environment variables.
 
-    Use it when you need compact 200-dim embeddings, BERT-style pretraining, or a lightweight model on resource-constrained hardware
+## What is missing
 
----
+scBERT is registered but the upstream inference runtime is not yet integrated into omicverse.llm.
 
-## Specifications
+## What you can run today
 
-| Property | Value |
-|----------|-------|
-| **Model** | scBERT |
-| **Version** | v1.0 |
-| **Tasks** | `embed`, `integrate` |
-| **Modality** | RNA |
-| **Species** | human |
-| **Gene ID** | symbol |
-| **Embedding dimension** | 200 |
-| **Requires GPU** | Yes |
-| **Minimum VRAM** | 8 GB |
-| **Recommended VRAM** | 16 GB |
-| **CPU fallback** | Yes |
-| **Adapter status** | ⚠️ Partial support |
-
----
-
-## Quick start
+Only the placeholder behaviour below runs; there is no embedding, annotation or integration for this model in `ov.llm`.
 
 ```python
 import omicverse as ov
 
-# 1. Inspect the model specification
-info = ov.fm.describe_model("scbert")
-
-# 2. Profile your data
-profile = ov.fm.profile_data("your_data.h5ad")
-
-# 3. Validate compatibility
-check = ov.fm.preprocess_validate("your_data.h5ad", "scbert", "embed")
-
-# 4. Run inference
-result = ov.fm.run(
-    task="embed",
-    model_name="scbert",
-    adata_path="your_data.h5ad",
-    output_path="output_scbert.h5ad",
-    device="auto",
-)
-
-# 5. Interpret the results
-metrics = ov.fm.interpret_results("output_scbert.h5ad", task="embed")
+model = ov.llm.ModelFactory.create_model("scbert")
+try:
+    model.get_embeddings(adata)
+except ov.llm.ModelExecutionBlockedError as err:
+    print(err)                 # scbert cannot run task 'embed': ...
+    print(err.checkpoint_url)  # https://github.com/TencentAILabHealthcare/scBERT
 ```
 
----
+Message printed by the placeholder: `scbert cannot run task 'embed': scBERT is registered but the upstream inference runtime is not yet integrated into omicverse.llm.`
 
-## Input requirements
-
-| Requirement | Details |
-|-------------|--------|
-| **Gene ID scheme** | symbol |
-| **Preprocessing** | Standard log-normalization and gene filtering. |
-| **Data format** | AnnData (`.h5ad`) |
-| **Batch key** | `.obs` column used for batch integration (optional) |
-
----
-
-## Output keys
-
-After running `ov.fm.run()`, results are stored in the AnnData object:
-
-| Key | Location | Description |
-|-----|----------|-------------|
-| `X_scBERT` | `adata.obsm` | Cell embedding vectors (200-dim) |
-| `scbert_pred` | `adata.obs` | Predicted cell-type labels |
-
-```python
-import scanpy as sc
-
-adata = sc.read_h5ad("output_scbert.h5ad")
-embeddings = adata.obsm["X_scBERT"]  # shape: (n_cells, 200)
-
-# Downstream analysis
-sc.pp.neighbors(adata, use_rep="X_scBERT")
-sc.tl.umap(adata)
-sc.tl.leiden(adata, resolution=0.5)
-sc.pl.umap(adata, color=["leiden"])
-```
-
----
+To use the model before it is integrated, run the upstream implementation directly. A custom wrapper that subclasses `SCLLMBase` can be plugged in with `ov.llm.ModelFactory.register_model("name", MyModel)`.
 
 ## References
 
-- **Repository / checkpoint:** [https://github.com/TencentAILabHealthcare/scBERT](https://github.com/TencentAILabHealthcare/scBERT)
-- **Paper:** [https://www.nature.com/articles/s42256-022-00534-z](https://www.nature.com/articles/s42256-022-00534-z)
-- **License:** See the upstream LICENSE
-
----
-
-## Hands-on tutorial
-
-For a step-by-step walkthrough with code, see the [scBERT tutorial notebook](t_fm_scbert.ipynb)。
+- Upstream repository: <https://github.com/TencentAILabHealthcare/scBERT>
+- Paper: <https://www.nature.com/articles/s42256-022-00534-z>
+- [Foundation models in ov.llm](t_fm_guide.md)

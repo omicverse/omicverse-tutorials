@@ -1,6 +1,6 @@
 # Foundation Models
 
-Tutorials for using the `ov.fm` unified API across 22 single-cell foundation models.
+Tutorials and guides for single-cell foundation models through `ov.llm.ModelFactory`. Six models are integrated (scGPT, scFoundation, Geneformer, CellPLM, UCE, scMulan); 16 more are registered placeholders and grouped under *Not yet integrated*.
 
 ```{toctree}
 :maxdepth: 2
