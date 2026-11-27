@@ -1,108 +1,41 @@
 # ATACformer
 
-⚠️ **Status:** Partial support | **Version:** v1.0
+**Status in `ov.llm`: not integrated yet** (placeholder `AtacformerModel`, model type `"atacformer"`).
 
----
+## What the model is
 
-## Overview
+Transformer for ATAC-seq that takes accessible peaks (not genes) as input (summary of the upstream model).
 
-Transformer designed for ATAC-seq that takes chromatin-accessible peaks (not genes) as input; a specialist model for chromatin accessibility analysis
+## What exists in omicverse
 
-!!! tip "When to choose ATACformer"
+- `"atacformer"` is listed by `ov.llm.ModelFactory.available_models()` and `ModelFactory.create_model("atacformer")` returns a `AtacformerModel` placeholder (`omicverse.llm.external_model_stubs`).
+- `load_model(path)` only checks that the checkpoint path exists and marks the placeholder as loaded; it loads no weights.
+- `predict`, `fine_tune`, `get_embeddings` and `save_model` always raise `ModelExecutionBlockedError`, carrying the reason, the upstream URL and the required environment variables.
 
-    Use it when you have ATAC-seq data, chromatin accessibility profiles, or peak-based (rather than gene-expression) input
+## What is missing
 
----
+Atacformer requires an ATAC-specific peak tokenizer/runtime that is not bundled in this repository.
 
-## Specifications
+## What you can run today
 
-| Property | Value |
-|----------|-------|
-| **Model** | ATACformer |
-| **Version** | v1.0 |
-| **Tasks** | `embed`, `integrate` |
-| **Modality** | ATAC |
-| **Species** | human |
-| **Gene ID** | custom (peak-based) |
-| **Embedding dimension** | 512 |
-| **Requires GPU** | Yes |
-| **Minimum VRAM** | 16 GB |
-| **Recommended VRAM** | 32 GB |
-| **CPU fallback** | No |
-| **Adapter status** | ⚠️ Partial support |
-
----
-
-## Quick start
+Only the placeholder behaviour below runs; there is no embedding, annotation or integration for this model in `ov.llm`.
 
 ```python
 import omicverse as ov
 
-# 1. Inspect the model specification
-info = ov.fm.describe_model("atacformer")
-
-# 2. Profile your data
-profile = ov.fm.profile_data("your_data.h5ad")
-
-# 3. Validate compatibility
-check = ov.fm.preprocess_validate("your_data.h5ad", "atacformer", "embed")
-
-# 4. Run inference
-result = ov.fm.run(
-    task="embed",
-    model_name="atacformer",
-    adata_path="your_data.h5ad",
-    output_path="output_atacformer.h5ad",
-    device="auto",
-)
-
-# 5. Interpret results
-metrics = ov.fm.interpret_results("output_atacformer.h5ad", task="embed")
+model = ov.llm.ModelFactory.create_model("atacformer")
+try:
+    model.get_embeddings(adata)
+except ov.llm.ModelExecutionBlockedError as err:
+    print(err)                 # atacformer cannot run task 'embed': ...
+    print(err.checkpoint_url)  # https://github.com/Atacformer/Atacformer
 ```
 
----
+Message printed by the placeholder: `atacformer cannot run task 'embed': Atacformer requires an ATAC-specific peak tokenizer/runtime that is not bundled in this repository.`
 
-## Input requirements
-
-| Requirement | Details |
-|-------------|--------|
-| **Gene ID scheme** | custom (peak-based) |
-| **Preprocessing** | Input must be an ATAC-seq peak matrix (not gene expression). Follow the standard scATAC-seq preprocessing workflow (LSI/TF-IDF). |
-| **Data format** | AnnData (`.h5ad`) |
-| **Batch key** | `.obs` column used for batch integration (optional) |
-
----
-
-## Output keys
-
-After running `ov.fm.run()`, results are stored in the AnnData object:
-
-| Key | Location | Description |
-|-----|----------|-------------|
-| `X_atacformer` | `adata.obsm` | Cell embedding vectors (512-dim) |
-
-```python
-import scanpy as sc
-
-adata = sc.read_h5ad("output_atacformer.h5ad")
-embeddings = adata.obsm["X_atacformer"]  # shape: (n_cells, 512)
-
-# Downstream analysis
-sc.pp.neighbors(adata, use_rep="X_atacformer")
-sc.tl.umap(adata)
-sc.tl.leiden(adata, resolution=0.5)
-sc.pl.umap(adata, color=["leiden"])
-```
-
----
+To use the model before it is integrated, run the upstream implementation directly. A custom wrapper that subclasses `SCLLMBase` can be plugged in with `ov.llm.ModelFactory.register_model("name", MyModel)`.
 
 ## References
 
-- **Repository / checkpoint:** [https://github.com/Atacformer/Atacformer](https://github.com/Atacformer/Atacformer)
-- **License:** See the upstream LICENSE
-
----
-
-## Hands-on tutorial
-
-For a step-by-step walkthrough with code, see the [ATACformer tutorial notebook](t_fm_atacformer.ipynb).
+- Upstream repository: <https://github.com/Atacformer/Atacformer>
+- [Foundation models in ov.llm](t_fm_guide.md)

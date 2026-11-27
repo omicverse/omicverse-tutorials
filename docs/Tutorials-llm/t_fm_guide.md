@@ -1,533 +1,141 @@
----
-title: "ov.fm — Foundation Model Module"
----
+# Foundation models in `ov.llm`
 
-# ov.fm — Foundation Model Module
+`ov.llm` wraps single-cell foundation models behind one factory. You create a model object with `ov.llm.ModelFactory.create_model(...)` and call its methods (`get_embeddings`, `predict`, `fine_tune`, `integrate`, ...). Six of the 22 registered models are integrated; the other 16 are registered placeholders that raise a clear error and are documented as **not integrated yet**.
 
-`ov.fm` provides a **unified API** for discovering, selecting, validating, running, and interpreting single-cell foundation models. It wraps 17+ models (scGPT, Geneformer, UCE, scFoundation, CellPLM, and more) behind a consistent AnnData-based interface, with automatic data profiling and model selection.
+The earlier unified foundation-model API and the high-level manager class have been removed. Use the model objects described here; the old manager calls map one-to-one onto model methods (see the Migration section below).
 
-!!! note "When to use ov.fm"
-
-    Use `ov.fm` when you want to apply pretrained foundation models to single-cell data without manually configuring each model's preprocessing pipeline. It automatically handles gene ID conversion, compatibility checks, and output standardization for you.
-
----
-
-## Quick Start
+## Quick start
 
 ```python
 import omicverse as ov
 
-# 1. See the available models
-models = ov.fm.list_models(task="embed")
-
-# 2. Profile your data
-profile = ov.fm.profile_data("pbmc3k.h5ad")
-
-# 3. Which model fits best?
-selection = ov.fm.select_model("pbmc3k.h5ad", task="embed")
-print(selection["recommended"]["name"])
-
-# 4. Is the data ready?
-check = ov.fm.preprocess_validate("pbmc3k.h5ad", "scgpt", "embed")
-
-# 5. Run the model
-result = ov.fm.run(task="embed", model_name="scgpt", adata_path="pbmc3k.h5ad",
-                   output_path="pbmc3k_embedded.h5ad")
-
-# 6. Visualize and evaluate
-metrics = ov.fm.interpret_results("pbmc3k_embedded.h5ad", task="embed")
-```
-
----
-
-## Six-Step Workflow
-
-`ov.fm` is designed around six composable steps. You can use any step on its own, or chain all of them together.
-
-```
-Discover ──▸ Profile ──▸ Select ──▸ Validate ──▸ Run ──▸ Interpret
-```
-
-| Step | Function | Purpose |
-|------|----------|---------|
-| **Discover** | `list_models()`, `describe_model()` | Browse available models and their capabilities |
-| **Profile** | `profile_data()` | Detect species, gene scheme, modality, and per-model compatibility |
-| **Select** | `select_model()` | Score and rank models for your data and task |
-| **Validate** | `preprocess_validate()` | Check data compatibility and get auto-fix suggestions |
-| **Run** | `run()` | Execute model inference (embedding, annotation, integration, etc.) |
-| **Interpret** | `interpret_results()` | Compute metrics (silhouette score), generate UMAP visualizations |
-
----
-
-## API Reference
-
-### `ov.fm.list_models`
-
-```python
-ov.fm.list_models(task=None, skill_ready_only=False) -> dict
-```
-
-Lists the available foundation models, with optional filtering.
-
-**Parameters:**
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `task` | str \| None | `None` | Filter by task: `"embed"`, `"annotate"`, `"integrate"`, `"perturb"`, `"spatial"`, `"drug_response"` |
-| `skill_ready_only` | bool | `False` | Only return models with a fully implemented adapter |
-
-**Returns:** A dict with `count` (int) and `models` (list of model summaries).
-
-```python
-result = ov.fm.list_models(task="embed")
-for m in result["models"]:
-    print(f"{m['name']:15s} status={m['status']:10s} tasks={m['tasks']}")
-```
-
----
-
-### `ov.fm.describe_model`
-
-```python
-ov.fm.describe_model(model_name: str) -> dict
-```
-
-Gets the full specification for a single model, including input/output contracts, hardware requirements, and resource links.
-
-**Returns:** A dict with `model`, `input_contract`, `output_contract`, and `resources` keys.
-
-```python
-spec = ov.fm.describe_model("scgpt")
-print(spec["input_contract"]["gene_id_scheme"])   # "symbol"
-print(spec["output_contract"]["embedding_key"])    # "X_scGPT"
-print(spec["output_contract"]["embedding_dim"])    # 512
-```
-
----
-
-### `ov.fm.profile_data`
-
-```python
-ov.fm.profile_data(adata_path: str) -> dict
-```
-
-Analyzes a `.h5ad` file and returns a data profile with automatic species/gene-scheme detection and per-model compatibility assessment.
-
-**Returns:** A dict with `n_cells`, `n_genes`, `species`, `gene_scheme`, `modality`, `has_raw`, `layers`, `obs_columns`, `obsm_keys`, `batch_columns`, `celltype_columns`, `model_compatibility`.
-
-```python
-profile = ov.fm.profile_data("pbmc3k.h5ad")
-print(f"Species: {profile['species']}")
-print(f"Gene IDs: {profile['gene_scheme']}")
-
-# See which models are compatible
-for name, compat in profile["model_compatibility"].items():
-    status = "OK" if compat["compatible"] else "ISSUES"
-    print(f"  {name}: {status}")
-```
-
----
-
-### `ov.fm.select_model`
-
-```python
-ov.fm.select_model(
-    adata_path: str,
-    task: str,
-    prefer_zero_shot: bool = True,
-    max_vram_gb: int = None,
-) -> dict
-```
-
-Scores and ranks models for a given dataset and task.
-
-**Parameters:**
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `adata_path` | str | — | Path to the `.h5ad` file |
-| `task` | str | — | Task type (required) |
-| `prefer_zero_shot` | bool | `True` | Prefer models that need no fine-tuning |
-| `max_vram_gb` | int \| None | `None` | Maximum VRAM budget |
-
-**Returns:** A dict with `recommended` (name + rationale), `fallbacks` (list), `preprocessing_notes`, `data_profile`.
-
-**Scoring logic:**
-
-- Skill-ready adapter: +100 (ready), +50 (partial), 0 (reference only)
-- Zero-shot match: +30
-- Gene-scheme match: +20
-- CPU fallback supported: +10
-- Low VRAM requirement: +5
-
-```python
-result = ov.fm.select_model("pbmc3k.h5ad", task="embed", prefer_zero_shot=True)
-print(f"Recommended: {result['recommended']['name']}")
-print(f"Rationale: {result['recommended']['rationale']}")
-print(f"Fallbacks: {[f['name'] for f in result['fallbacks']]}")
-```
-
----
-
-### `ov.fm.preprocess_validate`
-
-```python
-ov.fm.preprocess_validate(
-    adata_path: str,
-    model_name: str,
-    task: str,
-) -> dict
-```
-
-Validates data compatibility with a specific model and task. Returns diagnostics and auto-fix suggestions.
-
-**Returns:** A dict with `status` (`"ready"` | `"needs_preprocessing"` | `"incompatible"`), `diagnostics`, `auto_fixes`, `data_summary`.
-
-```python
-result = ov.fm.preprocess_validate("pbmc3k.h5ad", "scgpt", "embed")
-if result["status"] == "ready":
-    print("Data is ready for scGPT")
-else:
-    for diag in result["diagnostics"]:
-        print(f"[{diag['severity']}] {diag['message']}")
-    for fix in result["auto_fixes"]:
-        print(f"Suggested fix: {fix['action']}")
-        if "code" in fix:
-            print(fix["code"])
-```
-
----
-
-### `ov.fm.run`
-
-```python
-ov.fm.run(
-    task: str,
-    model_name: str,
-    adata_path: str,
-    output_path: str = None,
-    batch_key: str = None,
-    label_key: str = None,
-    device: str = "auto",
-    batch_size: int = None,
-    checkpoint_dir: str = None,
-) -> dict
-```
-
-Runs a foundation model on your data.
-
-**Parameters:**
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `task` | str | — | Task type (required) |
-| `model_name` | str | — | Model name (required) |
-| `adata_path` | str | — | Path to the input `.h5ad` (required) |
-| `output_path` | str \| None | `None` | Output path (defaults to overwriting the input file) |
-| `batch_key` | str \| None | `None` | `.obs` column with batch labels (required for `integrate`) |
-| `label_key` | str \| None | `None` | `.obs` column with cell-type labels |
-| `device` | str | `"auto"` | `"auto"`, `"cuda"`, `"cpu"`, `"mps"` |
-| `batch_size` | int \| None | `None` | Overrides the model's default batch size |
-| `checkpoint_dir` | str \| None | `None` | Path to the model checkpoint directory |
-
-**Returns:** On success, a dict with `output_path`, `output_keys`, `n_cells`, `status`; on failure, a dict with `error`, `status`.
-
-**Execution flow:**
-
-1. Validates the data via `preprocess_validate()`
-2. Attempts conda subprocess execution (isolated environment)
-3. Falls back to the in-process adapter if conda is unavailable
-4. Writes results and provenance metadata to the output AnnData
-
-```python
-result = ov.fm.run(
-    task="embed",
-    model_name="scgpt",
-    adata_path="pbmc3k.h5ad",
-    output_path="pbmc3k_embedded.h5ad",
+ov.llm.ModelFactory.available_models()          # all 22 registered model types
+model = ov.llm.ModelFactory.create_model(
+    model_type="scgpt",                         # see the table below
+    model_path="llm_model/models/scgpt",        # checkpoint folder / file
     device="cuda",
 )
-if "error" not in result:
-    print(f"Output keys: {result['output_keys']}")
-    print(f"Cells processed: {result['n_cells']}")
+embeddings = model.get_embeddings(adata)        # numpy array (n_cells, dim)
 ```
 
----
+`create_model(model_type, model_path=None, device=None, **kwargs)` instantiates the class, then calls `load_model(model_path, **kwargs)` when `model_path` is given. Extra keyword arguments reach both the constructor and `load_model` (for example `pretrain_version` for CellPLM or the five asset paths for UCE). Geneformer is created without `model_path` and loaded with `model.load_model(path, gene_median_file=..., token_dictionary_file=..., gene_mapping_file=...)`.
 
-### `ov.fm.interpret_results`
+## Integrated models
+
+| Model | model_type | Class | Tasks in ov.llm | Executed tutorial |
+|---|---|---|---|---|
+| [scGPT](t_fm_scgpt_guide.md) | `scgpt` | `ScGPTModel` | embedding, annotation, integration, perturbation | [t_scgpt](t_scgpt.ipynb) |
+| [scFoundation](t_fm_scfoundation_guide.md) | `scfoundation` | `ScFoundationModel` | embedding, annotation, integration | [t_scfoundation](t_scfoundation.ipynb) |
+| [Geneformer](t_fm_geneformer_guide.md) | `geneformer` | `GeneformerModel` | embedding, annotation, integration, perturbation | [t_geneformer](t_geneformer.ipynb) |
+| [CellPLM](t_fm_cellplm_guide.md) | `cellplm` | `CellPLMModel` | embedding, annotation, integration (imputation declared) | [t_cellplm](t_cellplm.ipynb) |
+| [UCE](t_fm_uce_guide.md) | `uce` | `UCEModel` | embedding, integration, annotation after fine-tuning | [t_uce](t_uce.ipynb) |
+| [scMulan](t_fm_scmulan_guide.md) | `scmulan` | `ScMulanModel` | embedding, zero-shot annotation (no fine-tuning) | none (not executed) |
+
+## Model methods
+
+All models derive from `SCLLMBase` (`load_model`, `preprocess`, `predict`, `fine_tune`, `get_embeddings`, `save_model`). The remaining methods exist only on some models (verified against the code):
+
+| method | scGPT | scFoundation | Geneformer | CellPLM | UCE | scMulan |
+|---|---|---|---|---|---|---|
+| `get_embeddings` | yes | yes | yes | yes | yes | yes |
+| `predict(task=...)` | annotation / embedding / integration | embedding / annotation / integration / generation | embedding / annotation / perturbation | annotation / embedding / imputation / integration | embedding; annotation after fine-tune | annotation |
+| `fine_tune` | yes | yes | yes | yes | yes | blocked |
+| `integrate` | yes | — | yes | yes | yes | — |
+| `train_integration` | yes | — | — | yes | — | — |
+| `predict_celltypes` | yes | yes | yes | yes | — | — |
+| `predict_celltype` | — | — | — | — | yes | — |
+| `predict_with_finetune` | — | yes | — | yes | — | — |
+| `perturb_genes` | — | — | yes | — | — | — |
+| `predict_perturbation` | yes | — | — | — | — | — |
+
+`ModelFactory` also offers `available_models()` and `register_model(model_type, model_class)` (the class must inherit `SCLLMBase`).
+
+## Helper functions
+
+`omicverse.llm.model_factory` contains per-model convenience functions that create a model and run a complete workflow. They are listed on each model page:
 
 ```python
-ov.fm.interpret_results(
-    adata_path: str,
-    task: str,
-    output_dir: str = None,
-    generate_umap: bool = True,
-    color_by: list = None,
-) -> dict
-```
-
-Generates quality metrics and visualizations for model outputs.
-
-**Parameters:**
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `adata_path` | str | — | Path to the `.h5ad` with model results |
-| `task` | str | — | The task that was run |
-| `output_dir` | str \| None | `None` | Output directory for visualizations |
-| `generate_umap` | bool | `True` | Whether to generate a UMAP plot |
-| `color_by` | list \| None | `None` | `.obs` columns to color the UMAP by |
-
-**Computed metrics:**
-
-- Embedding dimensionality and cell count
-- Silhouette score (if cell-type labels and sklearn are available)
-- Annotation column detection
-- Provenance metadata from `adata.uns["fm"]`
-
-```python
-result = ov.fm.interpret_results(
-    "pbmc3k_embedded.h5ad",
-    task="embed",
-    generate_umap=True,
-    color_by=["louvain"],
+from omicverse.llm.model_factory import (
+    load_scgpt, annotate_with_scgpt, integrate_with_scgpt,
+    get_embeddings_with_scfoundation, extract_geneformer_embeddings,
+    perturb_genes_with_geneformer, get_embeddings_with_cellplm,
 )
-for key, info in result["metrics"]["embeddings"].items():
-    print(f"{key}: dim={info['dim']}, silhouette={info.get('silhouette', 'N/A')}")
 ```
 
----
+| Model | Helpers |
+|---|---|
+| [scGPT](t_fm_scgpt_guide.md) | `load_scgpt`, `annotate_with_scgpt`, `fine_tune_scgpt`, `predict_celltypes_workflow`, `end_to_end_scgpt_annotation`, `train_integration_scgpt`, `integrate_batches_workflow`, `end_to_end_scgpt_integration`, `integrate_with_scgpt` |
+| [scFoundation](t_fm_scfoundation_guide.md) | `load_scfoundation`, `get_embeddings_with_scfoundation`, `end_to_end_scfoundation_embedding`, `fine_tune_scfoundation`, `predict_celltypes_with_scfoundation`, `end_to_end_scfoundation_annotation`, `integrate_with_scfoundation`, `integrate_batches_with_scfoundation`, `end_to_end_scfoundation_integration` |
+| [Geneformer](t_fm_geneformer_guide.md) | `load_geneformer`, `annotate_with_geneformer`, `extract_geneformer_embeddings`, `perturb_genes_with_geneformer`, `fine_tune_geneformer` |
+| [CellPLM](t_fm_cellplm_guide.md) | `load_cellplm`, `get_embeddings_with_cellplm`, `end_to_end_cellplm_embedding`, `fine_tune_cellplm`, `predict_celltypes_with_cellplm`, `end_to_end_cellplm_annotation`, `integrate_with_cellplm`, `end_to_end_cellplm_integration` |
+| UCE, scMulan | none |
 
-## Supported Tasks
+## Checkpoints
 
-| Task | Description | Example Models |
-|------|-------------|----------------|
-| `embed` | Generate cell embeddings for downstream analysis | scGPT, Geneformer, UCE, CellPLM |
-| `annotate` | Predict cell-type labels | scGPT (fine-tuned), sccello, ChatCell |
-| `integrate` | Batch integration across datasets | scGPT, Geneformer, UCE |
-| `perturb` | Perturbation-response prediction | scFoundation, Tabula |
-| `spatial` | Spatial transcriptomics analysis | Nicheformer |
-| `drug_response` | Drug-response modeling | scFoundation |
-
----
-
-## Model Catalog
-
-### Skill-Ready Models (Full Adapter)
-
-These models have fully implemented adapters and can be run directly via `ov.fm.run()`.
-
-| Model | Version | Tasks | Species | Gene IDs | GPU | Min VRAM |
-|-------|---------|-------|---------|----------|-----|----------|
-| **scGPT** | whole-human-2024 | embed, integrate | human, mouse | symbol | Yes | 8 GB |
-| **Geneformer** | v2-106M | embed, integrate | human | ensembl | No (CPU-capable) | 4 GB |
-| **UCE** | 4-layer | embed, integrate | 7 species | symbol | Yes | 16 GB |
-
-### Partial-Spec Models
-
-These models have partial specifications. They can be used for model selection and data profiling; execution capability depends on adapter availability.
-
-| Model | Tasks | Modality | Key Strength |
-|-------|-------|------------|-------------------|
-| **scFoundation** | embed, integrate | RNA | 19K-gene vocabulary, perturbation pretraining |
-| **scBERT** | embed, integrate | RNA | BERT-style masked language modeling |
-| **GeneCompass** | embed, integrate | RNA | Pretrained on 120M cells |
-| **CellPLM** | embed, integrate | RNA | Cell-centric (not gene-centric), high throughput |
-| **Nicheformer** | embed, integrate, spatial | RNA, Spatial | Niche-aware spatial modeling |
-| **scMulan** | embed, integrate | RNA, ATAC, Protein, Multi-omics | Native multi-omics |
-| **Tabula** | embed, annotate, integrate, perturb | RNA | Federated learning + FlashAttention |
-| **tGPT** | embed, integrate | RNA | Autoregressive next-token prediction |
-| **CellFM** | embed, integrate | RNA | MLP architecture, 126M cells |
-| **sccello** | embed, integrate, annotate | RNA | Zero-shot annotation via cell ontology |
-| **scPRINT** | embed, integrate | RNA | Denoising + protein-coding-gene focus |
-| **ATACformer** | embed, integrate | ATAC | Native peak-based ATAC-seq |
-| **scPlantLLM** | embed, integrate | RNA | Plant-specific (Arabidopsis, rice, maize) |
-| **LangCell** | embed, integrate | RNA | Text + cell alignment, natural-language queries |
-
-!!! tip "Model selection cheat sheet"
-
-    - **Default (RNA, human):** scGPT
-    - **Ensembl IDs / CPU-only:** Geneformer
-    - **Cross-species:** UCE (7 species supported)
-    - **Multi-omics (RNA+ATAC+protein):** scMulan
-    - **Spatial transcriptomics:** Nicheformer
-    - **ATAC-seq only:** ATACformer
-    - **Plant data:** scPlantLLM
-    - **Large-scale (1M+ cells):** CellPLM
-
----
-
-## Data Types and Enums
+`omicverse.llm.model_download` has a registry of checkpoint sources (Hugging Face, direct URLs, Google Drive folders):
 
 ```python
-from omicverse.fm import TaskType, Modality, GeneIDScheme, SkillReadyStatus
+from omicverse.llm.model_download import list_available_models, download_model
+
+list_available_models()                      # e.g. 'geneformer-v2-104m', 'scfoundation', 'uce', 'scmulan', 'scgpt-whole-human', ...
+path = download_model("geneformer-v2-104m", target_dir="llm_model/models/geneformer")
 ```
 
-=== "TaskType"
+The default target is `$OMICVERSE_HOME/models` or `~/.cache/omicverse/models`. CellPLM weights are not in the registry (download them from the link on its page).
 
-    ```python
-    TaskType.EMBED          # "embed"
-    TaskType.ANNOTATE       # "annotate"
-    TaskType.INTEGRATE      # "integrate"
-    TaskType.PERTURB        # "perturb"
-    TaskType.SPATIAL        # "spatial"
-    TaskType.DRUG_RESPONSE  # "drug_response"
-    ```
+## Not integrated yet
 
-=== "Modality"
+These 16 model types are registered in `ModelFactory` as placeholders (`omicverse.llm.external_model_stubs`). `create_model` works, but every task raises `ModelExecutionBlockedError` with the reason and upstream URL. No embeddings, annotation or integration are available for them.
 
-    ```python
-    Modality.RNA         # "RNA"
-    Modality.ATAC        # "ATAC"
-    Modality.SPATIAL     # "Spatial"
-    Modality.PROTEIN     # "Protein"
-    Modality.MULTIOMICS  # "Multi-omics"
-    ```
-
-=== "GeneIDScheme"
-
-    ```python
-    GeneIDScheme.SYMBOL   # "symbol"  — HGNC symbol (e.g. TP53)
-    GeneIDScheme.ENSEMBL  # "ensembl" — Ensembl ID (e.g. ENSG00000141510)
-    GeneIDScheme.CUSTOM   # "custom"  — model-specific vocabulary
-    ```
-
-=== "SkillReadyStatus"
-
-    ```python
-    SkillReadyStatus.READY      # Full adapter implemented
-    SkillReadyStatus.PARTIAL    # Partial spec, needs validation
-    SkillReadyStatus.REFERENCE  # Documentation only
-    ```
-
----
-
-## Plugin System
-
-You can register custom foundation models by writing a plugin.
-
-### Entry-point plugins (pip install)
-
-In your `pyproject.toml`:
-
-```toml
-[project.entry-points."omicverse.fm"]
-my_model = "my_package.fm_plugin:register"
-```
-
-### Local plugins (for development)
-
-Create a file at `~/.omicverse/plugins/fm/my_model.py`:
+| Model | model_type | Placeholder class | Would need |
+|---|---|---|---|
+| [scBERT](t_fm_scbert_guide.md) | `scbert` | `ScBERTModel` | upstream checkpoint |
+| [GeneCompass](t_fm_genecompass_guide.md) | `genecompass` | `GeneCompassModel` | upstream checkpoint |
+| [Nicheformer](t_fm_nicheformer_guide.md) | `nicheformer` | `NicheformerModel` | upstream checkpoint |
+| [tGPT](t_fm_tgpt_guide.md) | `tgpt` | `TGPTModel` | upstream checkpoint |
+| [CellFM](t_fm_cellfm_guide.md) | `cellfm` | `CellFMModel` | upstream checkpoint |
+| [scCello](t_fm_sccello_guide.md) | `sccello` | `ScCelloModel` | upstream checkpoint |
+| [scPRINT](t_fm_scprint_guide.md) | `scprint` | `ScPrintModel` | upstream checkpoint |
+| [AIDO.Cell](t_fm_aidocell_guide.md) | `aidocell` | `AiDocellModel` | upstream checkpoint |
+| [PULSAR](t_fm_pulsar_guide.md) | `pulsar` | `PulsarModel` | upstream checkpoint |
+| [ATACformer](t_fm_atacformer_guide.md) | `atacformer` | `AtacformerModel` | upstream checkpoint |
+| [scPlantLLM](t_fm_scplantllm_guide.md) | `scplantllm` | `ScPlantLLMModel` | upstream checkpoint |
+| [LangCell](t_fm_langcell_guide.md) | `langcell` | `LangCellModel` | upstream checkpoint |
+| [Cell2Sentence](t_fm_cell2sentence_guide.md) | `cell2sentence` | `Cell2SentenceModel` | upstream checkpoint |
+| [GenePT](t_fm_genept_guide.md) | `genept` | `GenePTModel` | none needed + OPENAI_API_KEY |
+| [ChatCell](t_fm_chatcell_guide.md) | `chatcell` | `ChatCellModel` | none needed |
+| [Tabula](t_fm_tabula_guide.md) | `tabula` | `TabulaModel` | upstream checkpoint |
 
 ```python
-from omicverse.fm import ModelSpec, SkillReadyStatus, TaskType, Modality, GeneIDScheme
-from omicverse.fm.adapters import BaseAdapter
-
-MY_SPEC = ModelSpec(
-    name="my_model",
-    version="v1.0",
-    skill_ready=SkillReadyStatus.PARTIAL,
-    tasks=[TaskType.EMBED],
-    modalities=[Modality.RNA],
-    species=["human"],
-    gene_id_scheme=GeneIDScheme.SYMBOL,
-    zero_shot_embedding=True,
-    embedding_dim=256,
-)
-
-class MyAdapter(BaseAdapter):
-    def run(self, task, adata_path, output_path, **kwargs):
-        ...  # your implementation
-
-    def _load_model(self, device):
-        ...
-
-    def _preprocess(self, adata, task):
-        ...
-
-    def _postprocess(self, adata, embeddings, task):
-        ...
-
-def register():
-    """Return a (spec, adapter_class) tuple."""
-    return (MY_SPEC, MyAdapter)
+try:
+    ov.llm.ModelFactory.create_model("scbert").get_embeddings(adata)
+except ov.llm.ModelExecutionBlockedError as err:
+    print(err.model_name, err.reason, err.checkpoint_url)
 ```
 
-!!! note
+`ModelExecutionBlockedError` attributes: `model_name`, `status`, `reason`, `checkpoint_url`, `required_env_vars`, `required_checkpoint`.
 
-    Plugins cannot override built-in models. If a name collision occurs, the plugin is skipped and a warning is emitted.
+## Migration
 
----
+The removed high-level manager and its method names map onto the model object `model = ov.llm.ModelFactory.create_model(model_type, model_path, device, **kw)`:
 
-## Registry API
+| Removed call | Replacement |
+|---|---|
+| `annotate_cells(adata)` | `model.predict(adata, task="annotation")` |
+| `get_embeddings(adata)` | `model.get_embeddings(adata)` |
+| `fine_tune(train, valid, task)` | `model.fine_tune(train_adata=train, valid_adata=valid, task=task)` |
+| `train_integration(...)` | `model.train_integration(train_adata=..., valid_adata=..., batch_key=...)` |
+| `integrate(adata, batch_key)` | `model.integrate(adata, batch_key=...)` |
+| `predict_celltypes(q)` | `model.predict_celltypes(q)` (scGPT, scFoundation, Geneformer, CellPLM) or `model.predict(q, task="annotation")` |
+| `perturb_genes(adata, genes, type)` | `model.perturb_genes(adata, genes, type)` (Geneformer only) |
+| `save_model(path)` | `model.save_model(path)` |
+| `manager.model` | `model` |
 
-For advanced usage, you can query the model registry directly:
+## Tutorials
 
-```python
-from omicverse.fm import get_registry
-
-registry = get_registry()
-
-# Get the spec for a specific model
-spec = registry.get("scgpt")
-print(spec.embedding_dim)       # 512
-print(spec.supports_task("embed"))  # True
-
-# Find models matching criteria
-matches = registry.find_models(
-    task="embed",
-    species="human",
-    gene_scheme="symbol",
-    zero_shot=True,
-    max_vram_gb=16,
-)
-for m in matches:
-    print(m.name, m.version)
-```
-
----
-
-## Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `OV_FM_CHECKPOINT_DIR` | Base directory for model checkpoints (`<base>/<model_name>/`) |
-| `OV_FM_CHECKPOINT_DIR_<MODEL>` | Per-model checkpoint directory (for any uppercase model name) |
-| `OV_FM_DISABLE_CONDA_SUBPROCESS` | Disable conda subprocess execution, use the in-process adapter only |
-
-**Checkpoint resolution order:**
-
-1. The `checkpoint_dir` argument to `ov.fm.run()`
-2. The `OV_FM_CHECKPOINT_DIR_<MODEL>` environment variable
-3. `OV_FM_CHECKPOINT_DIR/<model_name>/`
-4. Default cache: `~/.omicverse/models/<model_name>/`
-
----
-
-## Error Handling
-
-All functions return errors through the result dict rather than raising exceptions:
-
-```python
-result = ov.fm.run(task="embed", model_name="scgpt", adata_path="data.h5ad")
-if "error" in result:
-    print(f"Error: {result['error']}")
-    print(f"Status: {result['status']}")  # "not_implemented", "incompatible", etc.
-```
-
-Common error messages:
-
-| Error | Cause |
-|-------|-------|
-| `Model 'xxx' not found` | Model name not in the registry |
-| `File not found: xxx` | Invalid file path |
-| `Expected .h5ad file` | Wrong file format |
-| `No compatible models found` | No model satisfies the task/data constraints |
-| `No adapter implemented for model 'xxx'` | Model is documentation-only, no adapter |
-
----
-
-## Hands-On Tutorial
-
-For a step-by-step walkthrough with real data (PBMC 3K + scGPT), see the
-[foundation model tutorial notebook](t_fm.ipynb).
+- [ov.llm overview notebook](t_fm.ipynb)
+- [scGPT](t_scgpt.ipynb)
+- [scFoundation](t_scfoundation.ipynb)
+- [Geneformer](t_geneformer.ipynb)
+- [CellPLM](t_cellplm.ipynb)
+- [UCE](t_uce.ipynb)

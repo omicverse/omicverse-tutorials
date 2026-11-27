@@ -1,120 +1,76 @@
 # Geneformer
 
-✅ **状态：** 就绪 | **版本：** v2-106M
+**`ov.llm` 中的状态：已集成**（model type `"geneformer"`，类 `GeneformerModel`）。
 
----
+## 简介
 
-## 概述
+**Geneformer** 是在大规模单细胞转录组上用 rank-value 编码预训练的上下文感知注意力模型。`GeneformerModel` 支持嵌入、微调后注释、基于嵌入的批次整合，以及 in silico 基因扰动（`overexpress`、`inhibit`、`delete`）。基因符号通过提供的字典文件映射到 Ensembl ID。
 
-基于秩值编码的 Transformer，使用 Ensembl 基因 ID，支持 CPU 推理，融合网络生物学预训练
+文献：Theodoris, C. V. 等. Transfer learning enables predictions in network biology. *Nature* 618, 616–624 (2023)。模型库：<https://huggingface.co/ctheodoris/Geneformer>
 
-!!! tip "何时选择 Geneformer"
+## `ov.llm` 支持的任务
 
-    适用于拥有 Ensembl 基因 ID、需要纯 CPU 推理，或希望获得基因网络感知嵌入的场景
+| 任务 | 调用 | 说明 |
+|---|---|---|
+| embedding | `model.get_embeddings(adata, max_ncells=...)` | 已执行教程中 Geneformer-V2-104M 为 768 维 |
+| annotation | `model.fine_tune(train_adata=...)` → `model.predict(adata, task="annotation")` / `model.predict_celltypes(adata)` | `fine_tune` 的 `task` 可为 `annotation`、`gene_classification` |
+| integration | `model.integrate(adata, batch_key=..., correction_method=...)` | 在嵌入上做事后校正 |
+| perturbation | `model.perturb_genes(adata, target_genes, perturb_type)`; `model.get_perturbed_adata(...)`, `model.compare_perturbed_expression(...)` | 仅 Geneformer 提供 `perturb_genes`；结果可供 `ov.pl.perturbation_*` 使用 |
 
----
+并非每个模型都实现所有方法；调用不存在的方法会抛出 `AttributeError`（例如只有 Geneformer 提供 `perturb_genes`）。
 
-## 规格参数
+## 权重获取
 
-| 属性 | 值 |
-|----------|-------|
-| **模型** | Geneformer |
-| **版本** | v2-106M |
-| **任务** | `embed`, `integrate` |
-| **模态** | RNA |
-| **物种** | human |
-| **基因 ID** | ensembl (ENSG...) |
-| **嵌入维度** | 512 |
-| **需要 GPU** | 否 |
-| **最低显存** | 4 GB |
-| **推荐显存** | 16 GB |
-| **CPU 回退** | 是 |
-| **适配器状态** | ✅ 就绪 |
+Hugging Face：<https://huggingface.co/ctheodoris/Geneformer>（如 `Geneformer-V2-104M` 模型目录，以及 `gene_median_dictionary_gc104M.pkl`、`token_dictionary_gc104M.pkl`、`ensembl_mapping_dict_gc104M.pkl`）。注册表键 `geneformer`、`geneformer-v2-316m`、`geneformer-v2-104m`、`geneformer-v1-10m` 可通过 `omicverse.llm.model_download.download_model` 下载。可选依赖：`tdigest`、`peft`（缺失时仅告警）。
 
----
+## 最小示例
 
-## 快速开始
+该示例需要上述权重和 GPU，本页不执行。相同的调用已在教程 [Geneformer 教程](t_geneformer.ipynb) 中完整执行并保留输出。
 
 ```python
 import omicverse as ov
 
-# 1. 查看模型规格
-info = ov.fm.describe_model("geneformer")
-
-# 2. 分析您的数据
-profile = ov.fm.profile_data("your_data.h5ad")
-
-# 3. 验证兼容性
-check = ov.fm.preprocess_validate("your_data.h5ad", "geneformer", "embed")
-
-# 4. 运行推理
-result = ov.fm.run(
-    task="embed",
-    model_name="geneformer",
-    adata_path="your_data.h5ad",
-    output_path="output_geneformer.h5ad",
-    device="auto",
+model = ov.llm.ModelFactory.create_model(
+    model_type="geneformer", device="cuda", model_version="V2")
+model.load_model(
+    "llm_model/models/geneformer/Geneformer-V2-104M",
+    gene_median_file="llm_model/models/geneformer/gene_median_dictionary_gc104M.pkl",
+    token_dictionary_file="llm_model/models/geneformer/token_dictionary_gc104M.pkl",
+    gene_mapping_file="llm_model/models/geneformer/ensembl_mapping_dict_gc104M.pkl",
 )
 
-# 5. 解读结果
-metrics = ov.fm.interpret_results("output_geneformer.h5ad", task="embed")
+adata.obsm["X_geneformer"] = model.get_embeddings(adata, max_ncells=100000)
+
+# in silico knockout of transcription factors
+perturb_result = model.perturb_genes(
+    adata, target_genes=["SPI1", "PAX5", "TBX21"], perturb_type="delete",
+    max_ncells=adata.n_obs, forward_batch_size=50)
 ```
 
----
+## 输出
 
-## 输入要求
+| 调用 | 返回 |
+|---|---|
+| `get_embeddings` | ndarray `(n_cells, 768)`（V2-104M） |
+| `integrate` | dict：`embeddings`（及统计） |
+| `predict_celltypes` | dict：预测与统计 |
+| `perturb_genes` | 扰动结果 dict（细胞级余弦变化、基因级变化）；可传给 `ov.pl.perturbation_*` |
 
-| 要求 | 详情 |
-|-------------|--------|
-| **基因 ID 方案** | ensembl (ENSG...) |
-| **预处理** | 秩值编码。使用 `geneformer.preprocess()` 进行正确的 tokenization。如存在 Ensembl 版本后缀（如 `.15`），请将其去除。 |
-| **数据格式** | AnnData (`.h5ad`) |
-| **批次键** | 用于批次整合的 `.obs` 列（可选） |
+需自行保存结果（教程：`obsm['X_geneformer_fine']`）。V2 分词需像教程那样提供 `adata.obs['cell_barcode']`。
 
-!!! warning "基因 ID 转换"
+## 辅助函数
 
-    Geneformer 需要 Ensembl ID（如 `ENSG00000141510`）。若您的数据使用基因符号，请通过以下方式转换：
-    ```python
-    # ov.fm.preprocess_validate() 会自动检测并给出修复建议
-    check = ov.fm.preprocess_validate("data.h5ad", "geneformer", "embed")
-    print(check["auto_fixes"])  # 显示转换建议
-    ```
+`omicverse.llm.model_factory` 中的便捷函数，一次调用完成建模型与整套流程，例如 `from omicverse.llm.model_factory import load_geneformer`。
 
----
+| 函数 | 用途 |
+|---|---|
+| `load_geneformer(model_path, gene_median_file, token_dictionary_file, gene_mapping_file, device=None, model_version='V1', **kwargs)` | 创建模型并用三个字典文件 `load_model` |
+| `annotate_with_geneformer(adata, model_path, device=None, model_version='V1', **kwargs)` | 加载并 `predict(task="annotation")` |
+| `extract_geneformer_embeddings(adata, model_path, device=None, model_version='V1', emb_layer=0, **kwargs)` | 加载并提取嵌入（`emb_layer` 选层） |
+| `perturb_genes_with_geneformer(adata, target_genes, model_path, perturb_type='overexpress', device=None, model_version='V1', **kwargs)` | 一步完成 in silico 扰动 |
+| `fine_tune_geneformer(train_adata, model_path, valid_adata=None, save_path=None, device=None, model_version='V1', task='annotation', **kwargs)` | 在参考数据上微调 |
 
-## 输出键
+## 相关页面
 
-运行 `ov.fm.run()` 后，结果存储在 AnnData 对象中：
-
-| 键 | 位置 | 描述 |
-|-----|----------|-------------|
-| `X_geneformer` | `adata.obsm` | 细胞嵌入向量（512 维） |
-| `geneformer_pred` | `adata.obs` | 预测的细胞类型标签 |
-
-```python
-import scanpy as sc
-
-adata = sc.read_h5ad("output_geneformer.h5ad")
-embeddings = adata.obsm["X_geneformer"]  # shape: (n_cells, 512)
-
-# 下游分析
-sc.pp.neighbors(adata, use_rep="X_geneformer")
-sc.tl.umap(adata)
-sc.tl.leiden(adata, resolution=0.5)
-sc.pl.umap(adata, color=["leiden"])
-```
-
----
-
-## 参考资源
-
-- **仓库 / 检查点：** [https://huggingface.co/ctheodoris/Geneformer](https://huggingface.co/ctheodoris/Geneformer)
-- **论文：** [https://www.nature.com/articles/s41586-023-06139-9](https://www.nature.com/articles/s41586-023-06139-9)
-- **文档：** [https://geneformer.readthedocs.io/](https://geneformer.readthedocs.io/)
-- **许可证：** Apache 2.0（代码部分）
-
----
-
-## 动手教程
-
-如需包含代码的逐步演练，请参阅 [Geneformer 教程笔记本](t_geneformer.ipynb)。
+- [ov.llm 基础模型总览](t_fm_guide.md)
+- [Geneformer 教程（已执行）](t_geneformer.ipynb)

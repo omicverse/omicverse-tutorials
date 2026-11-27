@@ -1,6 +1,6 @@
 # Overview
 
-Introduction and quick-start guide for the `ov.fm` unified foundation model API.
+How `ov.llm.ModelFactory` and the model objects work, which models are integrated, and a code overview notebook.
 
 ```{toctree}
 :maxdepth: 1

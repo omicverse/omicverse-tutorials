@@ -1,6 +1,6 @@
-# Specialized Models
+# Not Yet Integrated: Specialized Models
 
-Guides for specialized single-cell foundation models.
+Registered placeholders only (no runnable implementation in `ov.llm`). Each page lists what exists and what is missing.
 
 ```{toctree}
 :maxdepth: 1

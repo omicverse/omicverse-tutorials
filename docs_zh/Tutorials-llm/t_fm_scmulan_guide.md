@@ -1,108 +1,59 @@
 # scMulan
 
-⚠️ **状态：** 部分支持 | **版本：** v1.0
+**`ov.llm` 中的状态：已集成**（model type `"scmulan"`，类 `ScMulanModel`）。
 
----
+## 简介
 
-## 概述
+**scMulan** 是多任务生成式预训练语言模型，把细胞表示为基因 token 加元信息（细胞类型、器官等）的句子。在 `ov.llm`（`ScMulanModel`）中封装了 `omicverse.external.scMulan` 内置的推理代码，**仅支持嵌入与细胞类型注释**。微调与 `save_model` 未实现，会抛出 `ModelExecutionBlockedError`。scMulan 目前没有已执行教程。
 
-原生多组学联合建模（RNA+ATAC+蛋白质同步处理），专为 CITE-seq/10x Multiome 设计
+文献：Bian, H. 等. scMulan: a multitask generative pre-trained language model for single-cell analysis. *RECOMB* 2024。代码：<https://github.com/SuperBianC/scMulan>
 
-!!! tip "何时选择 scMulan"
+## `ov.llm` 支持的任务
 
-    适用于拥有多组学数据（CITE-seq、10x Multiome、RNA+ATAC+蛋白质），或需要多模态联合嵌入的场景
+| 任务 | 调用 | 说明 |
+|---|---|---|
+| embedding | `model.get_embeddings(adata)` | 返回 float32 ndarray（scMulan 自身的 `X_scMulan`） |
+| annotation | `model.predict(adata, task="annotation")` | 零样本；其他 `task` 会抛出 `ValueError` |
+| fine-tuning / saving | `model.fine_tune(...)`, `model.save_model(...)` | 未实现：抛出 `ModelExecutionBlockedError` |
 
----
+并非每个模型都实现所有方法；调用不存在的方法会抛出 `AttributeError`（例如只有 Geneformer 提供 `perturb_genes`）。
 
-## 规格参数
+## 权重获取
 
-| 属性 | 值 |
-|----------|-------|
-| **模型** | scMulan |
-| **版本** | v1.0 |
-| **任务** | `embed`, `integrate` |
-| **模态** | RNA, ATAC, Protein, Multi-omics |
-| **物种** | human |
-| **基因 ID** | symbol |
-| **嵌入维度** | 512 |
-| **需要 GPU** | 是 |
-| **最低显存** | 16 GB |
-| **推荐显存** | 32 GB |
-| **CPU 回退** | 否 |
-| **适配器状态** | ⚠️ 部分支持 |
+作者清华云盘链接中的 `ckpt_scMulan.pt`（<https://cloud.tsinghua.edu.cn/f/2250c5df51034b2e9a85/?dl=1>）；注册表键 `scmulan`。`model_path` 可为文件，或包含 `ckpt_scMulan.pt`、`model.pt`、`model.pth` 的文件夹。基因符号元文件 `meta_info.pt` 随 `omicverse.external.scMulan` 提供（可用 `meta_info_path=` 覆盖）。
 
----
+## 最小示例
 
-## 快速开始
+该示例需要上述权重和 GPU。文档中**未**执行过，scMulan 目前也没有教程 notebook；请视为依据代码编写的 API 示意。
 
 ```python
 import omicverse as ov
 
-# 1. 查看模型规格
-info = ov.fm.describe_model("scmulan")
-
-# 2. 分析您的数据
-profile = ov.fm.profile_data("your_data.h5ad")
-
-# 3. 验证兼容性
-check = ov.fm.preprocess_validate("your_data.h5ad", "scmulan", "embed")
-
-# 4. 运行推理
-result = ov.fm.run(
-    task="embed",
-    model_name="scmulan",
-    adata_path="your_data.h5ad",
-    output_path="output_scmulan.h5ad",
-    device="auto",
+model = ov.llm.ModelFactory.create_model(
+    model_type="scmulan",
+    model_path="llm_model/models/scmulan/ckpt_scMulan.pt",
+    device="cuda",
 )
 
-# 5. 解读结果
-metrics = ov.fm.interpret_results("output_scmulan.h5ad", task="embed")
+adata.obsm["X_scMulan"] = model.get_embeddings(adata)
+
+res = model.predict(adata, task="annotation")
+adata.obs["scmulan_celltype"] = res["predicted_celltypes"]
 ```
 
----
+## 输出
 
-## 输入要求
+| 调用 | 返回 |
+|---|---|
+| `get_embeddings` | float32 ndarray `(n_cells, n_dim)` |
+| `predict(task="annotation")` | dict：`predicted_celltypes`（来自 `obs['cell_type_from_scMulan']`）、`embeddings` |
 
-| 要求 | 详情 |
-|-------------|--------|
-| **基因 ID 方案** | symbol |
-| **预处理** | 对于多组学数据，将数据组织为具有独立模态的 MuData 格式。仅 RNA 数据则进行标准预处理。 |
-| **数据格式** | AnnData (`.h5ad`) |
-| **批次键** | 用于批次整合的 `.obs` 列（可选） |
+scMulan 在副本上运行：`preprocess` 统一基因符号、转 CSC，并在 `X.max() > 10` 时做 log 归一化。需自行保存返回的数组。
 
----
+## 辅助函数
 
-## 输出键
+scMulan 没有专用辅助函数，请直接使用 `ModelFactory.create_model` 与模型方法。
 
-运行 `ov.fm.run()` 后，结果存储在 AnnData 对象中：
+## 相关页面
 
-| 键 | 位置 | 描述 |
-|-----|----------|-------------|
-| `X_scmulan` | `adata.obsm` | 细胞嵌入向量（512 维） |
-
-```python
-import scanpy as sc
-
-adata = sc.read_h5ad("output_scmulan.h5ad")
-embeddings = adata.obsm["X_scmulan"]  # shape: (n_cells, 512)
-
-# 下游分析
-sc.pp.neighbors(adata, use_rep="X_scmulan")
-sc.tl.umap(adata)
-sc.tl.leiden(adata, resolution=0.5)
-sc.pl.umap(adata, color=["leiden"])
-```
-
----
-
-## 参考资源
-
-- **仓库 / 检查点：** [https://github.com/SuperBianC/scMulan](https://github.com/SuperBianC/scMulan)
-- **许可证：** 请查阅上游 LICENSE
-
----
-
-## 动手教程
-
-如需包含代码的逐步演练，请参阅 [scMulan 教程笔记本](t_fm_scmulan.ipynb)。
+- [ov.llm 基础模型总览](t_fm_guide.md)
