@@ -14,7 +14,7 @@ Reference: Hao, M. et al. Large-scale foundation model on single-cell transcript
 |---|---|---|
 | embedding | `model.get_embeddings(adata, output_type="cell", pool_type="all")` | Cell embedding is 3072-dimensional in the executed tutorial |
 | annotation | `model.fine_tune(train_adata=...)` → `model.predict_celltypes(adata)` / `model.predict_with_finetune(adata)` / `model.predict(adata, task="annotation")` | Linear-probe fine-tuning (`frozen_more=True` freezes token/position embeddings) |
-| integration | `model.predict(adata, task="integration", batch_key=..., correction_method=...)` | Post-hoc correction on the embeddings. `ScFoundationModel` has no `integrate()` method; use `predict` |
+| integration | `model.integrate(adata, batch_key=..., correction_method=...)` (same as `model.predict(adata, task="integration", ...)`) | Post-hoc correction on the embeddings: `harmony` (default), `combat`, `scanorama`, `mnn`, `center_scale`, `none` |
 | generation | `model.predict(adata, task="generation")` is listed in the docstring | Declared by the wrapper but not covered by any tutorial here; treat as untested |
 
 Not every model implements every method; calling a missing one raises `AttributeError` (for example only Geneformer has `perturb_genes`).
@@ -41,8 +41,8 @@ adata.obsm["X_scfoundation"] = model.get_embeddings(
 
 model.fine_tune(train_adata=reference_adata, epochs=5, batch_size=32,
                 pre_normalized="T", lr=1e-3, frozen_more=True)
-res = model.predict(adata, task="integration", batch_key="batch",
-                    correction_method="mnn", pre_normalized="T")
+res = model.integrate(adata, batch_key="batch",
+                      correction_method="mnn", pre_normalized="T")
 adata.obsm["X_scfoundation_fine"] = res["embeddings"]
 anno = model.predict(adata, task="annotation", pre_normalized="T")
 ```
@@ -52,7 +52,7 @@ anno = model.predict(adata, task="annotation", pre_normalized="T")
 | Call | Returns |
 |---|---|
 | `get_embeddings` | ndarray `(n_cells, 3072)` |
-| `predict(task="integration")` | dict: `embeddings` |
+| `integrate` / `predict(task="integration")` | dict: `embeddings` |
 | `predict_celltypes` | dict: `predictions`, `predicted_celltypes`, `probabilities`, `celltype_mapping`, `prediction_summary` |
 
 Store results yourself (tutorial: `obsm['X_scfoundation']`, `obsm['X_scfoundation_fine']`). `pre_normalized` is `'T'`, `'F'` or `'A'` (already normalised / raw / auto).

@@ -14,7 +14,7 @@
 |---|---|---|
 | embedding | `model.get_embeddings(adata, output_type="cell", pool_type="all")` | 已执行教程中细胞嵌入为 3072 维 |
 | annotation | `model.fine_tune(train_adata=...)` → `model.predict_celltypes(adata)` / `model.predict_with_finetune(adata)` / `model.predict(adata, task="annotation")` | 线性探测微调（`frozen_more=True` 冻结 token/位置嵌入） |
-| integration | `model.predict(adata, task="integration", batch_key=..., correction_method=...)` | 在嵌入上做事后校正。`ScFoundationModel` 没有 `integrate()` 方法，请使用 `predict` |
+| integration | `model.integrate(adata, batch_key=..., correction_method=...)`（等同于 `model.predict(adata, task="integration", ...)`） | 在嵌入上做事后校正：`harmony`（默认）、`combat`、`scanorama`、`mnn`、`center_scale`、`none` |
 | generation | `model.predict(adata, task="generation")` is listed in the docstring | 包装器声明支持，但本处无教程覆盖；请视为未测试 |
 
 并非每个模型都实现所有方法；调用不存在的方法会抛出 `AttributeError`（例如只有 Geneformer 提供 `perturb_genes`）。
@@ -41,8 +41,8 @@ adata.obsm["X_scfoundation"] = model.get_embeddings(
 
 model.fine_tune(train_adata=reference_adata, epochs=5, batch_size=32,
                 pre_normalized="T", lr=1e-3, frozen_more=True)
-res = model.predict(adata, task="integration", batch_key="batch",
-                    correction_method="mnn", pre_normalized="T")
+res = model.integrate(adata, batch_key="batch",
+                      correction_method="mnn", pre_normalized="T")
 adata.obsm["X_scfoundation_fine"] = res["embeddings"]
 anno = model.predict(adata, task="annotation", pre_normalized="T")
 ```
@@ -52,7 +52,7 @@ anno = model.predict(adata, task="annotation", pre_normalized="T")
 | 调用 | 返回 |
 |---|---|
 | `get_embeddings` | ndarray `(n_cells, 3072)` |
-| `predict(task="integration")` | dict：`embeddings` |
+| `integrate` / `predict(task="integration")` | dict：`embeddings` |
 | `predict_celltypes` | dict：`predictions`、`predicted_celltypes`、`probabilities`、`celltype_mapping`、`prediction_summary` |
 
 需自行保存结果（教程：`obsm['X_scfoundation']`、`obsm['X_scfoundation_fine']`）。`pre_normalized` 取 `'T'`、`'F'`、`'A'`（已归一化/原始计数/自动）。
