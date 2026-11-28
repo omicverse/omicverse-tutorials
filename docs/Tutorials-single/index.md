@@ -38,6 +38,7 @@ This page mirrors the `Single` section in `mkdocs.yml`.
 ## Sample-level cohort analysis
 
 - [Sample-level cohort analysis with MrVI — latent hierarchy, donor distances, DA/DE](t_single_mrvi.ipynb)
+- [Sample-level cell-state distributions with scSLIDE — landmark density and sample geometry](t_scslide.md)
 
 ## Annotation
 

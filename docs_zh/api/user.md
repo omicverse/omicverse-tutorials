@@ -8,7 +8,7 @@ import omicverse as ov
 
 本页根据 OmicVerse registry 中的 `@register_function` 自动生成。
 
-当前列出的公开 registry API 数量：414
+当前列出的公开 registry API 数量：415
 
 ```{eval-rst}
 .. currentmodule:: omicverse
@@ -200,6 +200,7 @@ import omicverse as ov
    single.run_liana
    single.scanpy_cellanno_from_dict
    single.SCENIC
+   single.scslide
    single.TrajInfer
    single.Velo
 ```
